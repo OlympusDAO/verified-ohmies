@@ -1,6 +1,6 @@
 # Verified Ohmies (front-end)
 
-This example serves to illustrate the authentication-flow for the project [Verified Ohmies](https://www.notion.so/olympusdao/Active-Projects-703c573f1fdc42af95035fce2dca2321?p=62e7d754a50140e3a7f5775efff3089d).
+This is the front-end for Verified Ohmies with which the user interacts to do the authentication flow through their browser Wallet.
 
 Contents
 ========
@@ -11,8 +11,6 @@ Contents
  * [Future improvements](#future-improvements)
 
 ### How It Works
-
-![Verified Ohmies Front-End Demo](img/verified-ohmies-demo.gif)
 
 1. The user calls the authentication command in the Discord server, from which they receive the authentication URL containing a JWT in an argument called `id`. This JWT contains their Discord user ID, so that each user can only authenticate themselves and not other users. The logic that is executed when this command is called can be found in `olympus-api/lambda/verified-ohmies/commands/authenticate.ts`.
 2. Once the user clicks the URL they are directed to the authentication landing page, where they can connect their Metamask wallet.

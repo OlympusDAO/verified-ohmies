@@ -1,6 +1,6 @@
 # Verified Ohmies (back-end)
 
-This is the back-end infrastructure for the project [Token Ownership Verification on Discord](https://www.notion.so/olympusdao/Active-Projects-703c573f1fdc42af95035fce2dca2321?p=62e7d754a50140e3a7f5775efff3089d), which is a Discord bot that enables Discord users to prove they own Olympus tokens by signing a message with their wallet, and get a Discord role after successful authentication.
+This is the back-end infrastructure for Verified Ohmies.
 
 The purpose of this back-end infrastructure is threefold: 
 

@@ -1,0 +1,36 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/:authentication",
+      "destination": "/api/v1/:authentication"
+    },
+    {
+      "source": "/api/:balances",
+      "destination": "/api/v1/:balances"
+    },
+    {
+      "source": "/api/command-interactions",
+      "destination": "/api/v1/command-interactions"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/api/:authentication",
+      "headers": [
+        { "key": "Access-Control-Allow-Credentials", "value": "true" },
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Access-Control-Allow-Methods", "value": "GET,OPTIONS,POST" },
+        { "key": "Access-Control-Allow-Headers", "value": "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version" }
+      ]
+    },
+    {
+      "source": "/api/:balances",
+      "headers": [
+        { "key": "Access-Control-Allow-Credentials", "value": "true" },
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Access-Control-Allow-Methods", "value": "GET,OPTIONS,POST" },
+        { "key": "Access-Control-Allow-Headers", "value": "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version" }
+      ]
+    }
+  ]
+}

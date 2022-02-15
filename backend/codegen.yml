@@ -1,0 +1,15 @@
+overwrite: true
+schema: http://localhost:8080/v1/graphql
+headers:
+  x-hasura-admin-secret: hasuraadminpassword
+  content-type: application/json
+generates:
+  graphql/generated/graphql.tsx:
+    plugins:
+      - typescript
+      - typescript-operations
+    config:
+      skipTypename: false
+      withHooks: true
+      withHOC: false
+      withComponent: false

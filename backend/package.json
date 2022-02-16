@@ -7,8 +7,8 @@
     "node": "14.x"
   },
   "scripts": {
-    "vercel-build": "yarn run typechain --target ethers-v5 --out-dir typechain abi/*.json abi/**/*.json && tsc && node dist/scripts/sync",
-    "build": "yarn run typechain --target ethers-v5 --out-dir typechain abi/*.json abi/**/*.json && tsc",
+    "vercel-build": "yarn typechain:build && tsc && node dist/scripts/sync",
+    "build": "yarn typechain:build && tsc",
     "lint": "npx eslint --ext .ts .",
     "lint:fix": "npx eslint --ext .ts . --fix",
     "gen": "graphql-codegen --config codegen.yml",

@@ -15,3 +15,5 @@ _.env
 .vercel
 dist
 typechain
+.next
+build

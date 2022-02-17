@@ -1,7 +1,5 @@
 # Packages
 node_modules/
-yarn.lock
-package_lock.json
 
 # Log files
 logs/
@@ -14,4 +12,3 @@ logs/
 .vercel
 dist
 .next
-build

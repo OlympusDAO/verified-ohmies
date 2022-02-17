@@ -7,7 +7,6 @@ export default class AuthCommand extends SlashCommand {
     super(creator, {
       name: "verified",
       description: "🔑 Verify yourself as an Ohmie.",
-      guildIDs: [process.env.DISCORD_SERVER_ID as string],
       /*
       options: [
         {

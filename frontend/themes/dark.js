@@ -97,7 +97,7 @@ export const dark = responsiveFontSizes(
           "@global": {
             "@font-face": fonts,
             body: {
-              backgroundImage: 'url(images/background/bg-dark.png)',
+              backgroundImage: 'url(images/background/bg-dark.jpg)',
               backgroundRepeat: "no-repeat",
               backgroundPosition: "center center",
               backgroundSize: "cover",

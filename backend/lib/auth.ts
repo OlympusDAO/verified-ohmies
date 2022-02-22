@@ -1,4 +1,15 @@
-import { FIND_ONE_USER, INSERT_ONE_USER, SET_USER_NONCE, SET_USER_ADDRESS } from "../graphql/user";
+import {
+  FIND_USER_BY_ADDRESS,
+  DELETE_USER_VERIFIED_BY_DISCORDID,
+  FIND_USER_BY_DISCORDID,
+  INSERT_USER_ONE,
+  INSERT_USER_VERIFIED_ONE,
+  SET_USER_ADDRESS,
+  SET_USER_VERIFIED_TOKENS,
+  SET_USER_VERIFIED_NONCE,
+  SET_USER_VERIFIED_AUTHSTATUS,
+  SET_USER_CHAINID,
+} from "../graphql/user";
 import { utils } from "ethers";
 import { randomBytes } from "crypto";
 import { hasuraRequest } from "./hasura";
@@ -14,66 +25,162 @@ const generateNonce = async () => {
   return buffer.toString("hex");
 };
 
-export const getAuthenticationChallenge = async (publicAddress: string, discordUserId: string, chainId: number) => {
-  // Check if user with this discordUserId exists
-  const checkUser = await hasuraRequest(FIND_ONE_USER, { discordUserId });
+export const getAuthenticationChallenge = async (address: string, discordUserId: string, chainId: number) => {
+  // Important: See in the root folder of this project `assets/diagrams/user-verified-insert-update.png`
+  // for a diagram of this DB flow
+
+  // Check if `user` with this `address` already exists
+  const checkUser = await hasuraRequest(FIND_USER_BY_ADDRESS, { address });
   const user = (await checkUser.json()) as any;
-  // console.log("checkUser response:", checkUser);
-  console.log(`User: ${JSON.stringify(user)}`);
+  console.log(`FIND_USER_BY_ADDRESS: ${JSON.stringify(user)}`);
+  // Check if `user_verified` with this `discordUserId` already exists
+  const checkUserVerified = await hasuraRequest(FIND_USER_BY_DISCORDID, { discordUserId });
+  const userVerified = (await checkUserVerified.json()) as any;
+  console.log(`FIND_USER_BY_DISCORDID: ${JSON.stringify(userVerified)}`);
 
-  // If discordUserId hasn't been registered yet, register it
-  if (user.data.discord_ohmies.length == 0) {
-    const insertResponse = await hasuraRequest(INSERT_ONE_USER, {
-      publicAddress,
-      chainId,
-      discordUserId,
-    });
-    const response = await insertResponse.json();
-    console.log(`INSERT_ONE_USER response:`, response);
+  // If any of these happens, something has gone terribly wrong. `discordUserId` and
+  // `address` are unique fields.
+  if (user.data.user.length !== 0 && user.data.user.length !== 1) {
+    throw Error("Unexpected number of records found for this Ethereum address.");
+  }
+  if (userVerified.data.user.length !== 0 && userVerified.data.user.length !== 1) {
+    throw Error("Unexpected number of records found for this Discord User ID.");
+  }
 
-    // This will happen for example in the case where two different
-    // discordUserId try to authenticate with the same publicAddress
-    // Message is in response.errors[0].message
-    if (response.errors) {
-      throw Error("Error creating user. A possible cause is that this Ethereum address is already in use.");
+  // If `address` doesn't exist in `user` table
+  if (user.data.user.length == 0) {
+    console.log("ADDRESS EXISTS ? - NO");
+    // If `discordUserId` hasn't been registered yet, create a new `user` from scratch
+    // Fields `address` and `chainId` go into `user`.
+    // Field `discordUserId` goes into `user_verified`;
+    if (userVerified.data.user.length == 0) {
+      console.log("DISCORD ID EXISTS ? - NO");
+      const insertResponse = await hasuraRequest(INSERT_USER_ONE, {
+        address,
+        chainId,
+        discordUserId,
+      });
+      const response = await insertResponse.json();
+      console.log(`INSERT_USER_ONE:`, JSON.stringify(response));
     }
-  } else {
-    // If the discordUserId already existed, replace the chainId and publicAddress with the
-    // one the user is currently trying to authenticate (this will also set `ownedTokens` to null)
-    const setResponse = await hasuraRequest(SET_USER_ADDRESS, {
-      publicAddress,
-      chainId,
-      discordUserId,
-    });
-    const response = await setResponse.json();
-    console.log(`SET_USER_ADDRESS response:`, response);
-    if (response.errors) {
-      throw Error("Error updating Ethereum address. A possible cause is that this address is already in use.");
+    // If `discordUserId` had already been registered update the `address` and `chainId` fields, for this `discordUserId`
+    // (this is the case of a Discord user that had already registered, and is returning to register with a different address,
+    // such that the new address was not yet registered in `user`)
+    else if (userVerified.data.user.length == 1) {
+      console.log("DISCORD ID EXISTS ? - YES");
+      const setResponse = await hasuraRequest(SET_USER_ADDRESS, {
+        discordUserId, // where
+        address, // _set
+        chainId, // _set
+      });
+      const response = await setResponse.json();
+      console.log(`SET_USER_ADDRESS:`, JSON.stringify(response));
+    }
+    // If `address` exists in `user` table
+  } else if (user.data.user.length == 1) {
+    console.log("ADDRESS EXISTS ? - YES");
+    // If this `address` is already paired to a `discordUserId`
+    if (user.data.user[0].user_verified !== null) {
+      console.log("ADDRESS ALREADY PAIRED TO DISCORD ID ? - YES");
+      // The following case will happen in these situations:
+      // 1 - If for some reason the user started the authentication flow but then, for instance, canceled the signature on MetaMask,
+      // their pair `address`/`discordUserId` will be registered, but they wouldn't have gotten the role on Discord. So we want
+      // to let them authenticate again (`authStatus` in this case will be "AUTH_PENDING").
+      // 2 - The user has already successfuly authenticated in a certain chainId with a specific address, but now wants to authenticate in a
+      // different `chainId` with the same address (`authStatus` in this case will be "AUTH_SUCCESS").
+      if (user.data.user[0].user_verified.discordUserId === discordUserId) {
+        console.log("SAME DISCORD ID AS THIS ONE ? - YES");
+        const setChainResponse = await hasuraRequest(SET_USER_CHAINID, {
+          address, // where
+          chainId, // _set
+        });
+        const cResponse = await setChainResponse.json();
+        console.log(`SET_USER_CHAINID:`, JSON.stringify(cResponse));
+        const setTokensResponse = await hasuraRequest(SET_USER_VERIFIED_TOKENS, {
+          discordUserId, // where
+          tokens: null, // _set
+        });
+        const tResponse = await setTokensResponse.json();
+        console.log(`SET_USER_VERIFIED_TOKENS:`, JSON.stringify(tResponse));
+        // If it's a different `discordUserId` from the one this user is trying to register, the address is considered locked, so we throw error
+      } else {
+        console.log("SAME DISCORD ID AS THIS ONE ? - NO");
+        throw Error("Another Discord user is already registered with this Ethereum address.");
+      }
+    }
+    // If this `address` is not yet paired to a `discordUserId`, it's free to take
+    else {
+      console.log("ADDRESS PAIRED TO DISCORD ID ? - NO");
+      // If `discordUserId` already exists, we first delete the old record with this `discordUserId`
+      // (this is the case of a Discord user that had already registered, and is returning to register with a different `address`,
+      // such that the new `address` was already registered in `user` but didn't have attributed a `discordUserId`.
+      // Example: user X registers on Verified Ohmies with `address` X and also on Odyssey with `address` Y. But then user X
+      // tries to register again on Verified Ohmies, but now with `address` Y.
+      // Result: user_verified with this user's `discordUserId` gets deleted and
+      // `user` with address Y gets updated to be paired with this `discordUserId`.
+      if (userVerified.data.user.length == 1) {
+        console.log("DISCORD ID EXISTS ? - YES");
+        // Delete old user
+        const deleteResponse = await hasuraRequest(DELETE_USER_VERIFIED_BY_DISCORDID, {
+          discordUserId,
+        });
+        const dResponse = await deleteResponse.json();
+        console.log(`DELETE_USER_ONE:`, JSON.stringify(dResponse));
+      } else {
+        console.log("DISCORD ID EXISTS ? - NO");
+      }
+
+      // Set the new `chainId` for this `address` and get the `id` of the updated `user`
+      const setChainResponse = await hasuraRequest(SET_USER_CHAINID, {
+        address, // where
+        chainId, // _set
+      });
+      const cResponse = await setChainResponse.json();
+      console.log(`SET_USER_CHAINID:`, JSON.stringify(cResponse));
+      const user_id = cResponse.data.update_user.returning[0].id;
+      // Move this `discordUserId` to the pre-existing `user` with this `address`.
+      const insertResponse = await hasuraRequest(INSERT_USER_VERIFIED_ONE, {
+        user_id,
+        discordUserId,
+      });
+      const iResponse = await insertResponse.json();
+      console.log(`INSERT_USER_VERIFIED_ONE:`, JSON.stringify(iResponse));
     }
   }
 
-  // Generate a new nonce for this discordUserId
-  const newNonce = await generateNonce();
-  const setResponse = await hasuraRequest(SET_USER_NONCE, { discordUserId, nonce: newNonce });
-  const response = await setResponse.json();
+  // Initialize `authStatus` with `AUTH_PENDING`. If the user doesn't conclude the authentication for some reason
+  // (for example they cancel the signature on MetaMask), the status will stay as `AUTH_PENDING`.
+  const setStatusResponse = await hasuraRequest(SET_USER_VERIFIED_AUTHSTATUS, {
+    discordUserId, // where
+    authStatus: "AUTH_PENDING", // _set
+  });
+  const sResponse = await setStatusResponse.json();
+  console.log(`SET_USER_VERIFIED_AUTHSTATUS:`, JSON.stringify(sResponse));
 
-  console.log(`SET_USER_NONCE response:`, response);
-  if (response.errors) {
+  // Generate a new nonce for this `discordUserId`
+  const newNonce = await generateNonce();
+  const setNonceResponse = await hasuraRequest(SET_USER_VERIFIED_NONCE, {
+    discordUserId, // where
+    nonce: newNonce, // _set
+  });
+  const nResponse = await setNonceResponse.json();
+
+  console.log(`SET_USER_VERIFIED_NONCE:`, JSON.stringify(nResponse));
+  if (nResponse.errors) {
     throw Error("Error setting user nonce.");
   }
-  console.log({ newNonce });
   return newNonce;
 };
 
 export const authenticate = async (discordUserId: string, signature: string) => {
-  const checkUser = await hasuraRequest(FIND_ONE_USER, { discordUserId });
+  const checkUser = await hasuraRequest(FIND_USER_BY_DISCORDID, { discordUserId });
   const user = (await checkUser.json()) as any;
 
-  if (user.data.discord_ohmies.length == 0) throw new Error("User not found.");
-  assert(user.data.discord_ohmies.length == 1);
-  const publicAddress = user.data.discord_ohmies[0].publicAddress;
-  const nonce = user.data.discord_ohmies[0].nonce;
-  const chainId = user.data.discord_ohmies[0].chainId;
+  if (user.data.user.length == 0) throw new Error("User not found.");
+  assert(user.data.user.length == 1);
+  const address = user.data.user[0].address;
+  const chainId = user.data.user[0].chainId;
+  const nonce = user.data.user[0].user_verified.nonce;
 
   // Recover the address that corresponds to this pair nonce / signature,
   // and check if it matches the one the user claims to have.
@@ -81,9 +188,9 @@ export const authenticate = async (discordUserId: string, signature: string) => 
   console.log("Signature:", signature);
   const recoveredAddress = recoverAddress(nonce, signature);
 
-  if (recoveredAddress.toLowerCase() === publicAddress.toLowerCase()) {
+  if (recoveredAddress.toLowerCase() === address.toLowerCase()) {
     // If the check passes, return the discord user ID to attribute the role
-    return { publicAddress, chainId };
+    return { address, chainId };
   } else {
     throw new Error("Bad signature.");
   }

@@ -4,7 +4,7 @@ This is where the code for [Verified Ohmies](https://www.notion.so/olympusdao/Ac
 
 This is similar to what collab.land does for NFT’s, but here we have the added twist that we need to track several different tokens on several different chains.
 
-![Verified Ohmies Front-End Demo](img/verified-ohmies-demo.gif)
+![Verified Ohmies Front-End Demo](assets/images/verified-ohmies-demo.gif)
 
 ### Problem: Why is this project needed for the DAO? Which issues are solved by it?
 

@@ -22,11 +22,11 @@ export const requestNonce = async (signer: any, userIdToken: string) => {
   try {
     const { chainId } = await signer.provider.getNetwork();
     console.log({ chainId })
-    const publicAddress = await signer.getAddress();
-    console.log({ publicAddress });
+    const address = await signer.getAddress();
+    console.log({ address });
     // Request nonce
     const nonceResult = await apiRequest(
-      `/api/authentication?publicAddress=${publicAddress}&userIdToken=${userIdToken}&chainId=${chainId}`,
+      `/api/authentication?address=${address}&userIdToken=${userIdToken}&chainId=${chainId}`,
       "GET",
       null
     );
@@ -44,7 +44,7 @@ export const signNonce = async (signer: any, nonce: string, userIdToken: string)
   console.log("Sign nonce");
   try {
     const signature = await signer.signMessage(nonce);
-    // Send publicAddress + signature
+    // Send address + signature
     const authResult = await apiRequest(
       "/api/authentication",
       "POST",

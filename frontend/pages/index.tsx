@@ -24,7 +24,6 @@ const providerOptions = {
     package: WalletConnectProvider, // required
     options: {
       infuraId: process.env.NEXT_PUBLIC_INFURA_ID, // required
-      // TODO Test this
       qrcode: true,
     },
   },
@@ -172,7 +171,7 @@ const fetchBalances = ({
   chainId: number;
 }) =>
   fetch(
-    `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/api/balances?publicAddress=${address}&chainId=${chainId}`
+    `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/api/balances?address=${address}&chainId=${chainId}`
   ).then(async (d) => {
     const r = await d.json();
     if (!d.ok) throw new Error("Something went wrong fetching your balance. Try refreshing the page.");

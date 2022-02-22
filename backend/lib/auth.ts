@@ -41,20 +41,22 @@ export const getAuthenticationChallenge = async (address: string, discordUserId:
   // If any of these happens, something has gone terribly wrong. `discordUserId` and
   // `address` are unique fields.
   if (user.data.user.length !== 0 && user.data.user.length !== 1) {
+    console.log(`Unexpected number of records found for this Ethereum address. (address: ${address})`);
     throw Error("Unexpected number of records found for this Ethereum address.");
   }
   if (userVerified.data.user.length !== 0 && userVerified.data.user.length !== 1) {
+    console.log(`Unexpected number of records found for this Discord User ID. (discordUserId: ${discordUserId})`);
     throw Error("Unexpected number of records found for this Discord User ID.");
   }
 
   // If `address` doesn't exist in `user` table
   if (user.data.user.length == 0) {
-    console.log("ADDRESS EXISTS ? - NO");
+    console.log(`(address: ${address}, discordUserId: ${discordUserId}) ADDRESS EXISTS ? - [NO]`);
     // If `discordUserId` hasn't been registered yet, create a new `user` from scratch
     // Fields `address` and `chainId` go into `user`.
     // Field `discordUserId` goes into `user_verified`;
     if (userVerified.data.user.length == 0) {
-      console.log("DISCORD ID EXISTS ? - NO");
+      console.log(`(address: ${address}, discordUserId: ${discordUserId}) DISCORD ID EXISTS ? - [NO]`);
       const insertResponse = await hasuraRequest(INSERT_USER_ONE, {
         address,
         chainId,
@@ -67,7 +69,7 @@ export const getAuthenticationChallenge = async (address: string, discordUserId:
     // (this is the case of a Discord user that had already registered, and is returning to register with a different address,
     // such that the new address was not yet registered in `user`)
     else if (userVerified.data.user.length == 1) {
-      console.log("DISCORD ID EXISTS ? - YES");
+      console.log(`(address: ${address}, discordUserId: ${discordUserId}) DISCORD ID EXISTS ? - [YES]`);
       const setResponse = await hasuraRequest(SET_USER_ADDRESS, {
         discordUserId, // where
         address, // _set
@@ -78,10 +80,12 @@ export const getAuthenticationChallenge = async (address: string, discordUserId:
     }
     // If `address` exists in `user` table
   } else if (user.data.user.length == 1) {
-    console.log("ADDRESS EXISTS ? - YES");
+    console.log(`(address: ${address}, discordUserId: ${discordUserId}) ADDRESS EXISTS ? - [YES]`);
     // If this `address` is already paired to a `discordUserId`
     if (user.data.user[0].user_verified !== null) {
-      console.log("ADDRESS ALREADY PAIRED TO DISCORD ID ? - YES");
+      console.log(
+        `(address: ${address}, discordUserId: ${discordUserId}) ADDRESS ALREADY PAIRED TO DISCORD ID ? - [YES]`
+      );
       // The following case will happen in these situations:
       // 1 - If for some reason the user started the authentication flow but then, for instance, canceled the signature on MetaMask,
       // their pair `address`/`discordUserId` will be registered, but they wouldn't have gotten the role on Discord. So we want
@@ -89,7 +93,7 @@ export const getAuthenticationChallenge = async (address: string, discordUserId:
       // 2 - The user has already successfuly authenticated in a certain chainId with a specific address, but now wants to authenticate in a
       // different `chainId` with the same address (`authStatus` in this case will be "AUTH_SUCCESS").
       if (user.data.user[0].user_verified.discordUserId === discordUserId) {
-        console.log("SAME DISCORD ID AS THIS ONE ? - YES");
+        console.log(`(address: ${address}, discordUserId: ${discordUserId}) SAME DISCORD ID AS THIS ONE ? - [YES]`);
         const setChainResponse = await hasuraRequest(SET_USER_CHAINID, {
           address, // where
           chainId, // _set
@@ -104,13 +108,13 @@ export const getAuthenticationChallenge = async (address: string, discordUserId:
         console.log(`SET_USER_VERIFIED_TOKENS:`, JSON.stringify(tResponse));
         // If it's a different `discordUserId` from the one this user is trying to register, the address is considered locked, so we throw error
       } else {
-        console.log("SAME DISCORD ID AS THIS ONE ? - NO");
+        console.log(`(address: ${address}, discordUserId: ${discordUserId}) SAME DISCORD ID AS THIS ONE ? - [NO]`);
         throw Error("Another Discord user is already registered with this Ethereum address.");
       }
     }
     // If this `address` is not yet paired to a `discordUserId`, it's free to take
     else {
-      console.log("ADDRESS PAIRED TO DISCORD ID ? - NO");
+      console.log(`(address: ${address}, discordUserId: ${discordUserId}) ADDRESS PAIRED TO DISCORD ID ? - [NO]`);
       // If `discordUserId` already exists, we first delete the old record with this `discordUserId`
       // (this is the case of a Discord user that had already registered, and is returning to register with a different `address`,
       // such that the new `address` was already registered in `user` but didn't have attributed a `discordUserId`.
@@ -119,7 +123,7 @@ export const getAuthenticationChallenge = async (address: string, discordUserId:
       // Result: user_verified with this user's `discordUserId` gets deleted and
       // `user` with address Y gets updated to be paired with this `discordUserId`.
       if (userVerified.data.user.length == 1) {
-        console.log("DISCORD ID EXISTS ? - YES");
+        console.log(`(address: ${address}, discordUserId: ${discordUserId}) DISCORD ID EXISTS ? - [YES]`);
         // Delete old user
         const deleteResponse = await hasuraRequest(DELETE_USER_VERIFIED_BY_DISCORDID, {
           discordUserId,
@@ -127,7 +131,7 @@ export const getAuthenticationChallenge = async (address: string, discordUserId:
         const dResponse = await deleteResponse.json();
         console.log(`DELETE_USER_ONE:`, JSON.stringify(dResponse));
       } else {
-        console.log("DISCORD ID EXISTS ? - NO");
+        console.log(`(address: ${address}, discordUserId: ${discordUserId}) DISCORD ID EXISTS ? - [NO]`);
       }
 
       // Set the new `chainId` for this `address` and get the `id` of the updated `user`

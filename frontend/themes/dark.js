@@ -10,7 +10,7 @@ export const darkTheme = {
   gold: "#F8CC82",
   gray: "#A3A3A3",
   textHighlightColor: "#F4D092",
-  backgroundColor: "rgba(8, 15, 53, 1)",
+  backgroundColor: "#04061B",
   background: `
     linear-gradient(180deg, rgba(8, 15, 53, 0), rgba(0, 0, 10, 0.9)),
     linear-gradient(333deg, rgba(153, 207, 255, 0.2), rgba(180, 255, 217, 0.08)),

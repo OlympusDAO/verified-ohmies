@@ -87,6 +87,13 @@ vercel --prod
 
 > Tips: If you try calling it, the server still won't respond, because you haven't yet told Discord where the Interactions URL is (next step).
 
+#### Continuous Deployment
+
+The following secrets need to be defined in the GitHub repo in order for continuous deployment to be successful:
+
+- `ORG_ID`: The Vercel org ID
+- `PROJECT_ID`: The Vercel project ID
+- `VERCEL_TOKEN`: 
 
 ### On your Discord app
 

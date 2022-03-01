@@ -2,13 +2,13 @@
 
 This is the front-end for Verified Ohmies with which the user interacts to do the authentication flow through their browser Wallet.
 
-Contents
-========
- * [How It Works](#how-it-works)
- * [Requirements](#requirements)
- * [Setup](#setup)
- * [Deployment](#deployment)
- * [Future improvements](#future-improvements)
+# Contents
+
+- [How It Works](#how-it-works)
+- [Requirements](#requirements)
+- [Setup](#setup)
+- [Deployment](#deployment)
+- [Future improvements](#future-improvements)
 
 ### How It Works
 
@@ -39,8 +39,8 @@ vercel dev
 > You need to launch `olympus-api/lambda/verified-ohmies/` or deploy it
 
 ##### Vercel
-- Create the same `.env.example` variables on the Vercel project
 
+- Create the same `.env.example` variables on the Vercel project
 
 ### Deployment
 
@@ -48,7 +48,21 @@ vercel dev
 vercel --prod
 ```
 
+#### Continuous Deployment
+
+The following secrets need to be defined in the GitHub repo in order for continuous deployment to be successful:
+
+- `VERCEL_ORG_ID`: The Vercel org ID
+- `VERCEL_FRONTEND_PROJECT_ID`: The Vercel project ID
+- `VERCEL_TOKEN`:
+
+The app requires the following to be run:
+
+- `NEXT_PUBLIC_BACKEND_API_URL`:
+- `NEXT_PUBLIC_INFURA_ID`:
+
 ### Future Improvements
+
 - Add landing page for returning users which confirms that they're already authenticated. Also add the possibility to remove authentication and remove their data from our servers.
 - Improve front-end transitions when switching to a different address/chain on Metamask. Currently a full page refresh is triggered on change, which makes the button "Connect Wallet" show up.
 - Instead of having all the wallet state & logic in `pages/index.tsx`, create a context wrapper for that.

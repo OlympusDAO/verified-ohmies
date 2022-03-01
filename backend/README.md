@@ -91,15 +91,25 @@ vercel --prod
 
 The following secrets need to be defined in the GitHub repo in order for continuous deployment to be successful:
 
-- `ORG_ID`: The Vercel org ID
-- `PROJECT_ID`: The Vercel project ID
+- `VERCEL_ORG_ID`: The Vercel org ID
+- `VERCEL_FRONTEND_PROJECT_ID`: The Vercel project ID
 - `VERCEL_TOKEN`: 
+
+The app requires the following to be run:
+
 - `DISCORD_APP_ID`: 
 - `DISCORD_BOT_TOKEN`: 
 - `DISCORD_PUBLIC_KEY`: 
 - `JWT_SECRET`: 
 - `JWT_EXPIRATION_TIME`: 
 - `FRONTEND_URL`: (infinite loop?)
+- `MORALIS_API_KEY`: 
+- `ETHERSCAN_API_KEY`: 
+- `COVALENTHQ_API_KEY`: 
+- `ALCHEMY_MAINNET_API_KEY`: 
+- `ALCHEMY_RINKEBY_API_KEY`: 
+- `HASURA_ENDPOINT`: 
+- `HASURA_ADMIN_SECRET`: 
 
 ### On your Discord app
 

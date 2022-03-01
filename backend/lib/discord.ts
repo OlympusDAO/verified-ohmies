@@ -25,9 +25,9 @@ export const assignRole = async (
   discordServerId: string,
   discordRoleId: string,
   discordUserId: string,
-  publicAddress: string,
+  address: string,
   chainId: number,
-  ownedTokens: string[]
+  tokens: string[]
 ) => {
   await waitForClient();
   let assignedRole = false;
@@ -38,7 +38,7 @@ export const assignRole = async (
     await member.roles.add(discordRoleId);
     assignedRole = true;
     await member.send(
-      `Congrats fren, you're now a verified Ohmie! Ethereum Address: ${publicAddress}; Chain ID: ${chainId}; Owned Tokens: ${ownedTokens}`
+      `Congrats fren, you're now a verified Ohmie! Ethereum Address: ${address}; Chain ID: ${chainId}; Owned Tokens: ${tokens}`
     );
     sentMessage = true;
   } catch {}
@@ -50,7 +50,7 @@ export const revokeRole = async (
   discordServerId: string,
   discordRoleId: string,
   discordUserId: string,
-  publicAddress: string,
+  address: string,
   chainId: number,
   minThreshold: number,
   sendNotificationDM: boolean
@@ -66,7 +66,7 @@ export const revokeRole = async (
 
     if (sendNotificationDM) {
       await member.send(
-        `Your Verified Ohmies role has been revoked because you don't own tokens amounting to a minimum of ${minThreshold} in address ${publicAddress} (Chain ID: ${chainId}).`
+        `Your Verified Ohmies role has been revoked because you don't own tokens amounting to a minimum of ${minThreshold} in address ${address} (Chain ID: ${chainId}).`
       );
       sentMessage = true;
     }

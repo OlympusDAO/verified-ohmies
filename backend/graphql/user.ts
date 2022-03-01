@@ -1,33 +1,122 @@
-export const INSERT_ONE_USER = /* GraphQL */ `
-  mutation InsertOneUser($discordUserId: String, $publicAddress: String, $nonce: String, $chainId: Int) {
-    insert_discord_ohmies_one(
-      object: {
-        publicAddress: $publicAddress
-        discordUserId: $discordUserId
-        nonce: null
-        ownedTokens: null
-        chainId: $chainId
+export const FIND_USER_BY_ADDRESS = /* GraphQL */ `
+  query FIND_USER_BY_ADDRESS($address: String!) {
+    user(where: { address: { _eq: $address } }) {
+      address
+      user_verified {
+        discordUserId
       }
-    ) {
-      publicAddress
-      updated_at
+    }
+  }
+`;
+export const DELETE_USER_VERIFIED_BY_DISCORDID = /* GraphQL */ `
+  mutation DELETE_USER_VERIFIED_BY_DISCORDID($discordUserId: String!) {
+    delete_user_verified(where: { discordUserId: { _eq: $discordUserId } }) {
+      affected_rows
     }
   }
 `;
 
-export const FIND_ONE_USER = /* GraphQL */ `
-  query GetUser($discordUserId: String) {
-    discord_ohmies(where: { discordUserId: { _eq: $discordUserId }, nonce: { _is_null: false } }) {
-      discordUserId
-      publicAddress
-      nonce
-      ownedTokens
+export const FIND_USER_BY_DISCORDID = /* GraphQL */ `
+  query FIND_USER_BY_DISCORDID($discordUserId: String!) {
+    user(where: { user_verified: { discordUserId: { _eq: $discordUserId } } }) {
+      id
+      address
       chainId
+      user_verified {
+        discordUserId
+        nonce
+        tokens
+      }
     }
   }
 `;
 
-export const GET_AUTH_USERS_BATCH = /* GraphQL */ `
+export const INSERT_USER_ONE = /* GraphQL */ `
+  mutation INSERT_USER_ONE($address: String!, $chainId: Int!, $discordUserId: String!) {
+    insert_user_one(
+      object: { address: $address, chainId: $chainId, user_verified: { data: { discordUserId: $discordUserId } } }
+    ) {
+      address
+      user_verified {
+        discordUserId
+      }
+    }
+  }
+`;
+
+export const INSERT_USER_VERIFIED_ONE = /* GraphQL */ `
+  mutation INSERT_USER_VERIFIED_ONE($user_id: uuid!, $discordUserId: String!) {
+    insert_user_verified_one(object: { user_id: $user_id, discordUserId: $discordUserId, tokens: null }) {
+      discordUserId
+    }
+  }
+`;
+
+export const SET_USER_VERIFIED_NONCE = /* GraphQL */ `
+  mutation SET_USER_VERIFIED_NONCE($discordUserId: String!, $nonce: String!) {
+    update_user_verified(where: { discordUserId: { _eq: $discordUserId } }, _set: { nonce: $nonce }) {
+      returning {
+        discordUserId
+        nonce
+      }
+    }
+  }
+`;
+
+export const SET_USER_VERIFIED_TOKENS = /* GraphQL */ `
+  mutation SET_USER_VERIFIED_TOKENS($discordUserId: String!, $tokens: jsonb!) {
+    update_user_verified(where: { discordUserId: { _eq: $discordUserId } }, _set: { tokens: $tokens }) {
+      returning {
+        discordUserId
+        tokens
+      }
+    }
+  }
+`;
+
+export const SET_USER_VERIFIED_AUTHSTATUS = /* GraphQL */ `
+  mutation SET_USER_VERIFIED_AUTHSTATUS($discordUserId: String!, $authStatus: String!) {
+    update_user_verified(where: { discordUserId: { _eq: $discordUserId } }, _set: { authStatus: $authStatus }) {
+      returning {
+        discordUserId
+        authStatus
+      }
+    }
+  }
+`;
+
+export const SET_USER_CHAINID = /* GraphQL */ `
+  mutation SET_USER_CHAINID($address: String!, $chainId: Int!) {
+    update_user(where: { address: { _eq: $address } }, _set: { chainId: $chainId }) {
+      returning {
+        id
+      }
+    }
+  }
+`;
+
+export const SET_USER_ADDRESS = /* GraphQL */ `
+  mutation SET_USER_ADDRESS($discordUserId: String!, $address: String!, $chainId: Int!) {
+    update_user(
+      where: { user_verified: { discordUserId: { _eq: $discordUserId } } }
+      _set: { address: $address, chainId: $chainId }
+    ) {
+      returning {
+        address
+        chainId
+      }
+    }
+    update_user_verified(where: { discordUserId: { _eq: $discordUserId } }, _set: { tokens: null }) {
+      returning {
+        discordUserId
+      }
+    }
+  }
+`;
+
+// Used for cron lambda w/ Moralis balances fetching, which will be switched for snapshot
+/*
+export const GET_AUTH_USERS_BATCH = `
   query GetUsersBatch($limit: Int, $lastBatchCreatedAt: timestamptz) {
     discord_ohmies(
       limit: $limit
@@ -35,53 +124,10 @@ export const GET_AUTH_USERS_BATCH = /* GraphQL */ `
       order_by: { created_at: asc }
     ) {
       discordUserId
-      publicAddress
+      address
       chainId
       created_at
     }
   }
 `;
-
-export const SET_USER_NONCE = /* GraphQL */ `
-  mutation SetUserNonce($discordUserId: String, $nonce: String) {
-    update_discord_ohmies(where: { discordUserId: { _eq: $discordUserId } }, _set: { nonce: $nonce }) {
-      returning {
-        nonce
-      }
-    }
-  }
-`;
-
-export const SET_USER_ADDRESS = /* GraphQL */ `
-  mutation SetUserAddress($discordUserId: String, $publicAddress: String, $chainId: Int) {
-    update_discord_ohmies(
-      where: { discordUserId: { _eq: $discordUserId } }
-      _set: { publicAddress: $publicAddress, chainId: $chainId, ownedTokens: null }
-    ) {
-      returning {
-        publicAddress
-        chainId
-      }
-    }
-  }
-`;
-
-export const SET_USER_OWNEDTOKENS = /* GraphQL */ `
-  mutation SetUserOwnedTokens($discordUserId: String, $ownedTokens: jsonb) {
-    update_discord_ohmies(where: { discordUserId: { _eq: $discordUserId } }, _set: { ownedTokens: $ownedTokens }) {
-      returning {
-        ownedTokens
-      }
-    }
-  }
-`;
-
-export const SET_USER_AUTHSTATUS = /* GraphQL */ `
-  mutation SetUserAuthStatus($discordUserId: String, $authStatus: String) {
-    update_discord_ohmies(where: { discordUserId: { _eq: $discordUserId } }, _set: { authStatus: $authStatus }) {
-      returning {
-        authStatus
-      }
-    }
-  }
-`;
+*/

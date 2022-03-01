@@ -1,9 +1,18 @@
+// ------
+// Chronos: this won't scale for Moralis. Initially this was done thinking about the Covalent case
+// where the rate limit was 20 parallel/reqs, with no rate limit per minute. Moralis has a rate limit
+// of 1500 reqs/min for free account, so the batching methodology won't work for a single lambda call.
+//
+// New path to follow for this purpose is ERC20 snapshotting directly through a node.
+// ------
+
 // - Called through cron job -
 
 // Go through all the registered users in the DB and check whether they still own tokens
 // in an amount larger than the minimum threshold. If they don't, their Discord token gets revoked
 // and, if `SEND_DM_REVOKE`, they get a notification DM.
 
+/*
 import { VercelRequest, VercelResponse } from "@vercel/node";
 import { hasuraRequest } from "../../lib/hasura";
 import { tokensOwned } from "../../lib/fetchBalances";
@@ -60,10 +69,10 @@ const balances = async (request: VercelRequest, response: VercelResponse) => {
     var hrStartBatch = process.hrtime();
     // Process current batch
     await Promise.all(
-      usersBatch.map(async (user: { publicAddress: string; chainId: ChainId; discordUserId: string }) => {
+      usersBatch.map(async (user: { address: string; chainId: ChainId; discordUserId: string }) => {
         var logMsg = `${user.discordUserId}: `;
         try {
-          const ownedTokens = await tokensOwned(user.publicAddress, user.chainId, MINIMUM_OHM_EQUIV_AUTH);
+          const ownedTokens = await tokensOwned(user.address, user.chainId, MINIMUM_OHM_EQUIV_AUTH);
           logMsg = logMsg.concat(`Owned tokens = ${JSON.stringify(ownedTokens)}; `);
           logMsg = logMsg.concat(`Outcome = `);
 
@@ -77,7 +86,7 @@ const balances = async (request: VercelRequest, response: VercelResponse) => {
               process.env.DISCORD_SERVER_ID as string,
               process.env.DISCORD_ROLE_ID as string,
               user.discordUserId,
-              user.publicAddress,
+              user.address,
               user.chainId,
               MINIMUM_OHM_EQUIV_AUTH,
               SEND_DM_REVOKE
@@ -138,3 +147,4 @@ const balances = async (request: VercelRequest, response: VercelResponse) => {
 };
 
 export default balances;
+*/

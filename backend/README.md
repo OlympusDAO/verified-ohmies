@@ -94,6 +94,12 @@ The following secrets need to be defined in the GitHub repo in order for continu
 - `ORG_ID`: The Vercel org ID
 - `PROJECT_ID`: The Vercel project ID
 - `VERCEL_TOKEN`: 
+- `DISCORD_APP_ID`: 
+- `DISCORD_BOT_TOKEN`: 
+- `DISCORD_PUBLIC_KEY`: 
+- `JWT_SECRET`: 
+- `JWT_EXPIRATION_TIME`: 
+- `FRONTEND_URL`: (infinite loop?)
 
 ### On your Discord app
 

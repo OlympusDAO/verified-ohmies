@@ -4,7 +4,11 @@ on:
   pull_request:
     branches: [main, develop]
 
+# Vercel requires one project for each directory in a monorepo:
+# https://vercel.com/blog/monorepos
+
 jobs:
+  # TODO run tests
   backend:
     runs-on: ubuntu-latest
     steps:
@@ -15,9 +19,22 @@ jobs:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_BACKEND_PROJECT_ID }}
           working-directory: ./backend
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: amondnet/vercel-action@v20
+        id: backend_deploy
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_FRONTEND_PROJECT_ID }}
+          working-directory: ./frontend
 
   # ${{ backend.steps.backend_deploy.preview_url }}
   # TODO prod flag
   # TODO prod domain
+  # TODO populate NEXT_PUBLIC_BACKEND_API_URL

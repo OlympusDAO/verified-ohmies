@@ -23,6 +23,7 @@ jobs:
           working-directory: ./backend
       - name: Sync Discord commands
         run: yarn run slash-up sync
+        working-directory: ./backend
         env:
           DISCORD_APP_ID: ${{ secrets.DISCORD_APP_ID }}
           DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}

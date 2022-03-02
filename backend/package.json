@@ -7,9 +7,9 @@
     "node": "14.x"
   },
   "scripts": {
-    "sync": "slash-up sync",
-    "sync:dev": "slash-up sync -e development",
-    "build": "pwd && ls && yarn typechain:build && tsc",
+    "sync": "yarn run slash-up sync",
+    "sync:dev": "yarn run slash-up sync -e development",
+    "build": "pwd && ls && yarn typechain:build && pwd && ls && tsc",
     "lint": "npx eslint --ext .ts .",
     "lint:fix": "npx eslint --ext .ts . --fix",
     "typechain:build": "yarn run typechain --target ethers-v5 --out-dir typechain abi/*.json abi/**/*.json"

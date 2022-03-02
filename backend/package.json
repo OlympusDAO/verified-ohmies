@@ -7,7 +7,7 @@
     "node": "14.x"
   },
   "scripts": {
-    "sync": "slash-up sync",
+    "sync": "echo $DISCORD_APP_ID && slash-up sync",
     "sync:dev": "slash-up sync -e development",
     "vercel-build": "yarn typechain:build && tsc && yarn sync",
     "build": "yarn typechain:build && tsc",

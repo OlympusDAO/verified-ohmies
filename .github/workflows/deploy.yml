@@ -13,6 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      # TODO use our own?
       - uses: amondnet/vercel-action@v20
         id: backend_deploy
         with:
@@ -21,6 +22,9 @@ jobs:
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_BACKEND_PROJECT_ID }}
           working-directory: ./backend
+      - name: Install Dependencies
+        run: yarn install --frozen-lockfile
+        working-directory: ./backend
       - name: Sync Discord commands
         run: yarn run slash-up sync
         working-directory: ./backend

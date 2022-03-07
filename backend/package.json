@@ -17,7 +17,6 @@
   },
   "dependencies": {
     "ethers": "^5.0.17",
-    "etherscan-api": "^10.0.5",
     "jsonwebtoken": "^8.5.1",
     "node-fetch": "2.6.7",
     "slash-create": "^5.2.1",

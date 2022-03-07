@@ -1,3 +1,6 @@
+// Etherscan is not used anymore. Used previously for Rinkeby but now everything is going through Moralis
+
+/*
 import { ChainId } from "../../constants";
 import { Token, BalancesAPIError } from ".";
 import { init as etherscanInit } from "etherscan-api";
@@ -26,13 +29,6 @@ export const tokensBalances = async ({
   chainId: ChainId;
   tokenAddresses: { [key: string]: string };
 }): Promise<Token[]> => {
-  /*
-  console.log("Etherscan `tokensBalances`. Arguments:", {
-    address,
-    chainId,
-    tokenAddresses,
-  });
-  */
 
   const chainName = ChainNames[chainId];
   if (!chainName) throw Error(`Etherscan API doesn't support chain with ID ${chainId}`);
@@ -78,14 +74,6 @@ export const tokensOwned = async ({
   tokenAddresses: { [key: string]: string };
   minThreshold: number;
 }): Promise<string[]> => {
-  /*
-  console.log("Etherscan `tokensOwned`. Arguments:", {
-    address,
-    chainId,
-    tokenAddresses,
-  });
-  */
-
   var idx = await currentIndex({ chainId });
   var balances = await tokensBalances({ address, chainId, tokenAddresses });
 
@@ -106,3 +94,5 @@ export const tokensOwned = async ({
 
   return tokensNames;
 };
+
+*/

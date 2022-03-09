@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@material-ui/core": "4.12.3",
-    "@olympusdao/component-library": "^1.6.1",
+    "@olympusdao/component-library": "^1.7.0",
     "@types/js-cookie": "^3.0.1",
     "@walletconnect/web3-provider": "^1.6.5",
     "ethers": "5.5.1",

@@ -13,7 +13,7 @@
     "@material-ui/core": "4.12.3",
     "@olympusdao/component-library": "^1.6.1",
     "@types/js-cookie": "^3.0.1",
-    "@walletconnect/web3-provider": "^1.6.5",
+    "@walletconnect/web3-provider": "^1.7.1",
     "ethers": "5.5.1",
     "js-cookie": "^3.0.1",
     "next": "12",

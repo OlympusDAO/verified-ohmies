@@ -194,6 +194,7 @@ const Home = ({ initialAppTheme }) => {
     authStatus,
     error,
   } = state;
+  console.log("backend url = " + process.env.NEXT_PUBLIC_BACKEND_API_URL);
 
   const connect = useCallback(async function () {
     // This is the initial `provider` that is returned when

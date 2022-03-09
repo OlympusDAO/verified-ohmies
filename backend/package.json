@@ -21,7 +21,7 @@
     "node-fetch": "2.6.7",
     "slash-create": "^5.2.1",
     "typechain": "^7.0.0",
-    "uuidv4": "6.2.7"
+    "uuidv4": "6.2.12"
   },
   "devDependencies": {
     "@typechain/ethers-v5": "^9.0.0",

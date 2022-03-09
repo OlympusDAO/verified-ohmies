@@ -44,6 +44,7 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version-file: "frontend/.nvmrc"
+      - run: echo "URL is ${{ needs.backend.outputs.backend-url }}"
       - uses: amondnet/vercel-action@v20
         id: frontend_deploy
         with:
@@ -61,3 +62,4 @@ jobs:
   # TODO run tests
   # TODO populate NEXT_PUBLIC_BACKEND_API_URL
   # TODO check that runtime environment variables are valid
+  # TODO PR comment for each push

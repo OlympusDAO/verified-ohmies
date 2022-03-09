@@ -16,7 +16,7 @@ jobs:
       - name: Setup node
         uses: actions/setup-node@v2
         with:
-          node-version-file: ".nvmrc"
+          node-version-file: "backend/.nvmrc"
       # TODO use our own?
       - uses: amondnet/vercel-action@v20
         id: backend_deploy

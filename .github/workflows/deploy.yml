@@ -26,8 +26,6 @@ jobs:
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_BACKEND_PROJECT_ID }}
           working-directory: ./backend
-      - name: NVM
-        run: nvm ls
       - name: Install Dependencies
         run: yarn install --frozen-lockfile
         working-directory: ./backend

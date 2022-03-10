@@ -63,7 +63,6 @@ jobs:
         with:
           inputsToCheck: "DISCORD_APP_ID,DISCORD_BOT_TOKEN,DISCORD_PUBLIC_KEY,JWT_SECRET,JWT_EXPIRATION_TIME,FRONTEND_URL"
           failOnMissing: "true"
-        env:
       - uses: actions/checkout@v2
       - name: Setup node
         uses: actions/setup-node@v2

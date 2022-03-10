@@ -73,7 +73,7 @@ jobs:
           }
 
           errorMessage() {
-            echo "Your secret ${1} seems to be missing please contact the Central-OPs team"
+            echo "Your secret ${1} seems to be missing"
             return 1
           }
 
@@ -102,4 +102,3 @@ jobs:
   # TODO prod flag
   # TODO prod domain
   # TODO run tests
-  # TODO check that runtime environment variables are valid

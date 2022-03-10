@@ -51,7 +51,19 @@ jobs:
   discord:
     runs-on: ubuntu-latest
     needs: frontend
+    env:
+      DISCORD_APP_ID: ${{ secrets.DISCORD_APP_ID }}
+      DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
+      DISCORD_PUBLIC_KEY: ${{ secrets.DISCORD_PUBLIC_KEY }}
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      JWT_EXPIRATION_TIME: ${{ secrets.JWT_EXPIRATION_TIME }}
+      FRONTEND_URL: ${{ needs.frontend.outputs.preview-url }}
     steps:
+      - uses: svrooij/secret-gate-action@v1
+        with:
+          inputsToCheck: "DISCORD_APP_ID,DISCORD_BOT_TOKEN,DISCORD_PUBLIC_KEY,JWT_SECRET,JWT_EXPIRATION_TIME,FRONTEND_URL"
+          failOnMissing: "true"
+        env:
       - uses: actions/checkout@v2
       - name: Setup node
         uses: actions/setup-node@v2
@@ -63,13 +75,6 @@ jobs:
       - name: Sync Discord commands
         run: yarn run slash-up sync
         working-directory: ./discord
-        env:
-          DISCORD_APP_ID: ${{ secrets.DISCORD_APP_ID }}
-          DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
-          DISCORD_PUBLIC_KEY: ${{ secrets.DISCORD_PUBLIC_KEY }}
-          JWT_SECRET: ${{ secrets.JWT_SECRET }}
-          JWT_EXPIRATION_TIME: ${{ secrets.JWT_EXPIRATION_TIME }}
-          FRONTEND_URL: ${{ needs.frontend.outputs.preview-url }}
 
   # TODO prod flag
   # TODO prod domain

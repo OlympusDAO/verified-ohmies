@@ -44,7 +44,8 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version-file: "frontend/.nvmrc"
-      - run: echo "URL is ${{ needs.backend.outputs.backend-url }}"
+      - name: Write environment
+        run: echo NEXT_PUBLIC_BACKEND_API_URL=${{ needs.backend.outputs.backend-url }} >> ./frontend/.env && cat ./frontend/.env
       - uses: amondnet/vercel-action@v20
         id: frontend_deploy
         with:
@@ -53,8 +54,6 @@ jobs:
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_FRONTEND_PROJECT_ID }}
           working-directory: ./frontend
-        env:
-          NEXT_PUBLIC_BACKEND_API_URL: ${{ needs.backend.outputs.backend-url }}
 
   # ${{ backend.steps.backend_deploy.preview_url }}
   # TODO prod flag
@@ -62,4 +61,3 @@ jobs:
   # TODO run tests
   # TODO populate NEXT_PUBLIC_BACKEND_API_URL
   # TODO check that runtime environment variables are valid
-  # TODO PR comment for each push

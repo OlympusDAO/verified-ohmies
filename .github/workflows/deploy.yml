@@ -11,7 +11,7 @@ jobs:
   backend:
     runs-on: ubuntu-latest
     outputs:
-      backend-url: ${{ steps.backend_deploy.outputs.preview-url }}
+      preview-url: ${{ steps.backend_deploy.outputs.preview-url }}
     steps:
       - uses: actions/checkout@v2
       - name: Setup node
@@ -37,6 +37,8 @@ jobs:
           DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
   frontend:
     runs-on: ubuntu-latest
+    outputs:
+      preview-url: ${{ steps.frontend_deploy.outputs.preview-url }}
     needs: backend
     steps:
       - uses: actions/checkout@v2
@@ -46,7 +48,7 @@ jobs:
           node-version-file: "frontend/.nvmrc"
       # Write variables that will be used by Vercel during deployment
       - name: Write environment
-        run: echo NEXT_PUBLIC_BACKEND_API_URL=${{ needs.backend.outputs.backend-url }} >> ./frontend/.env
+        run: echo NEXT_PUBLIC_BACKEND_API_URL=${{ needs.backend.outputs.preview-url }} >> ./frontend/.env
       - uses: amondnet/vercel-action@v20
         id: frontend_deploy
         with:

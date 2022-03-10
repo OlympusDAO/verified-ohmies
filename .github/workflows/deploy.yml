@@ -57,17 +57,9 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version-file: "frontend/.nvmrc"
-      # Write variables that will be used by Vercel during deployment
+      # Write variables that will be used during deployment
       - name: Write environment
         run: echo FRONTEND_URL=${{ needs.frontend.outputs.preview-url }} >> ./discord/.env
-      - uses: amondnet/vercel-action@v20
-        id: discord_deploy
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_DISCORD_PROJECT_ID }}
-          working-directory: ./discord
       - name: Install Dependencies
         run: yarn install --frozen-lockfile
         working-directory: ./discord

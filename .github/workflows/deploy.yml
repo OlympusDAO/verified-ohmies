@@ -59,6 +59,7 @@ jobs:
       JWT_EXPIRATION_TIME: ${{ secrets.JWT_EXPIRATION_TIME }}
       FRONTEND_URL: ${{ needs.frontend.outputs.preview-url }}
     steps:
+      # Source: https://github.community/t/how-can-i-test-if-secrets-are-available-in-an-action/17911/12
       - name: Check Variables
         run: |
           MD5() {

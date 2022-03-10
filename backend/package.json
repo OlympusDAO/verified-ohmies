@@ -7,9 +7,7 @@
     "node": "14.x"
   },
   "scripts": {
-    "sync": "yarn run slash-up sync",
-    "sync:dev": "yarn run slash-up sync -e development",
-    "build": "pwd && ls && yarn typechain:build && pwd && ls && tsc",
+    "build": "yarn typechain:build && tsc",
     "lint": "npx eslint --ext .ts .",
     "lint:fix": "npx eslint --ext .ts . --fix",
     "typechain:build": "yarn run typechain --target ethers-v5 --out-dir typechain abi/*.json abi/**/*.json"
@@ -19,7 +17,6 @@
     "etherscan-api": "^10.0.5",
     "jsonwebtoken": "^8.5.1",
     "node-fetch": "2.6.1",
-    "slash-create": "^5.2.1",
     "typechain": "^7.0.0",
     "uuidv4": "6.2.7"
   },
@@ -35,7 +32,6 @@
     "eslint": "^7.15.0",
     "eslint-config-prettier": "^7.0.0",
     "eslint-plugin-prettier": "^3.3.0",
-    "prettier": "^2.2.1",
-    "slash-up": "^1.0.11"
+    "prettier": "^2.2.1"
   }
 }

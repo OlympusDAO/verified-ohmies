@@ -60,10 +60,33 @@ jobs:
       FRONTEND_URL: ${{ needs.frontend.outputs.preview-url }}
     steps:
       - name: Check Variables
-        uses: svrooij/secret-gate-action@v1
-        with:
-          inputsToCheck: DISCORD_APP_ID,DISCORD_BOT_TOKEN,DISCORD_PUBLIC_KEY,JWT_SECRET,JWT_EXPIRATION_TIME,FRONTEND_URL
-          failOnMissing: "true"
+        run: |
+          MD5() {
+            result=($(md5sum <(echo "${1}")))
+            echo $result
+          }
+
+          secretPresent() {
+            emptyHash=$(MD5 "")
+            secretHash=$(MD5 "${1}")
+            ! diff <(echo $secretHash) <(echo $emptyHash) &> /dev/null
+          }
+
+          errorMessage() {
+            echo "Your secret ${1} seems to be missing please contact the Central-OPs team"
+            return 1
+          }
+
+          secretStatus=0
+
+          secretPresent "${{ secrets.DISCORD_APP_ID }}" || errorMessage "DISCORD_APP_ID" || secretStatus=1
+          secretPresent "${{ secrets.DISCORD_BOT_TOKEN }}" || errorMessage "DISCORD_BOT_TOKEN" || secretStatus=2
+          secretPresent "${{ secrets.DISCORD_PUBLIC_KEY }}" || errorMessage "DISCORD_PUBLIC_KEY" || secretStatus=3
+          secretPresent "${{ secrets.JWT_SECRET }}" || errorMessage "JWT_SECRET" || secretStatus=4
+          secretPresent "${{ secrets.JWT_EXPIRATION_TIME }}" || errorMessage "JWT_EXPIRATION_TIME" || secretStatus=5
+          secretPresent "${{ secrets.FRONTEND_URL }}" || errorMessage "FRONTEND_URL" || secretStatus=5
+
+          exit $secretStatus
       - uses: actions/checkout@v2
       - name: Setup node
         uses: actions/setup-node@v2

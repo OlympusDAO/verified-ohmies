@@ -26,15 +26,6 @@ jobs:
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_BACKEND_PROJECT_ID }}
           working-directory: ./backend
-      - name: Install Dependencies
-        run: yarn install --frozen-lockfile
-        working-directory: ./backend
-      - name: Sync Discord commands
-        run: yarn run slash-up sync
-        working-directory: ./backend
-        env:
-          DISCORD_APP_ID: ${{ secrets.DISCORD_APP_ID }}
-          DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
   frontend:
     runs-on: ubuntu-latest
     outputs:
@@ -77,8 +68,15 @@ jobs:
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_DISCORD_PROJECT_ID }}
           working-directory: ./discord
-      - name: Slash Sync
-        run: yarn sync
+      - name: Install Dependencies
+        run: yarn install --frozen-lockfile
+        working-directory: ./discord
+      - name: Sync Discord commands
+        run: yarn run slash-up sync
+        working-directory: ./discord
+        env:
+          DISCORD_APP_ID: ${{ secrets.DISCORD_APP_ID }}
+          DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
 
   # TODO prod flag
   # TODO prod domain

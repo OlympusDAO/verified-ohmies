@@ -2,11 +2,10 @@
 
 This is the back-end infrastructure for Verified Ohmies.
 
-The purpose of this back-end infrastructure is threefold:
+The purpose of this back-end infrastructure is twofold:
 
-1. Communicate with the Discord API to create, sync, and reply to Discord commands.
-2. Handle the Ethereum wallet authentication-flow coming from the front-end and verify whether the authenticated address owns Olympus tokens.
-3. Retrieve Olympus token balances for the address the user has selected on their wallet, and pass them to the front-end.
+1. Handle the Ethereum wallet authentication-flow coming from the front-end and verify whether the authenticated address owns Olympus tokens.
+2. Retrieve Olympus token balances for the address the user has selected on their wallet, and pass them to the front-end.
 
 # Contents
 
@@ -18,9 +17,8 @@ The purpose of this back-end infrastructure is threefold:
 
 ### Endpoints
 
-This back-end infrastructure is composed by three different API endpoints, which can be found under `api/v1`:
+This back-end infrastructure is composed by two different API endpoints, which can be found under `api/v1`:
 
-- `command-interactions.ts` - This is the endpoint that talks with the Discord API. It's responsible for syncing all the commands listed under `commands/` and replying to them every time a user calls a command on Discord.
 - `authentication.ts` - This endpoint handles the Ethereum wallet authentication-flow coming from the front-end. This flow includes the following stages:
   1. Once the user clicks the "Authenticate" button in the front-end, they send the following arguments to this endpoint through a `GET` request:
      - The JWT that was passed to them in the URL they received from calling the verification command on Discord. This JWT contains the Discord user ID (this is passed inside a JWT so that a user can only authenticate themselves and not someone else).
@@ -106,19 +104,10 @@ Vercel:
 - `VERCEL_BACKEND_PROJECT_ID`: The Vercel project ID
 - `VERCEL_TOKEN`:
 
-Discord:
-
-- `DISCORD_APP_ID`: for `slash-up sync`
-- `DISCORD_BOT_TOKEN`: for slash-up `slash-up sync`
-
 The app requires the following environment variables to be present:
 
-- `DISCORD_APP_ID`:
 - `DISCORD_BOT_TOKEN`:
-- `DISCORD_PUBLIC_KEY`:
 - `JWT_SECRET`:
-- `JWT_EXPIRATION_TIME`:
-- `FRONTEND_URL`: (infinite loop?)
 - `MORALIS_API_KEY`:
 - `ETHERSCAN_API_KEY`:
 - `COVALENTHQ_API_KEY`:

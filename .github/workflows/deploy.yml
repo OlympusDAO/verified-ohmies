@@ -57,9 +57,6 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version-file: "frontend/.nvmrc"
-      # Write variables that will be used during deployment
-      - name: Write environment
-        run: echo FRONTEND_URL=${{ needs.frontend.outputs.preview-url }} >> ./discord/.env
       - name: Install Dependencies
         run: yarn install --frozen-lockfile
         working-directory: ./discord
@@ -69,6 +66,10 @@ jobs:
         env:
           DISCORD_APP_ID: ${{ secrets.DISCORD_APP_ID }}
           DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
+          DISCORD_PUBLIC_KEY: ${{ secrets.DISCORD_PUBLIC_KEY }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          JWT_EXPIRATION_TIME: ${{ secrets.JWT_EXPIRATION_TIME }}
+          FRONTEND_URL: ${{ needs.frontend.outputs.preview-url }}
 
   # TODO prod flag
   # TODO prod domain

@@ -38,6 +38,9 @@ jobs:
           touch ${{ env.ENV_FILE }}
           echo JWT_SECRET=${{ env.JWT_SECRET }} >> ${{ env.ENV_FILE }}
           echo DISCORD_BOT_TOKEN=${{ env.DISCORD_BOT_TOKEN }} >> ${{ env.ENV_FILE }}
+      - name: Install Dependencies
+        run: yarn install --frozen-lockfile
+        working-directory: ./backend
       - uses: amondnet/vercel-action@v20
         id: backend_deploy
         with:

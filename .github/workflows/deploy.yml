@@ -121,6 +121,9 @@ jobs:
           echo DISCORD_BOT_TOKEN=${{ env.DISCORD_BOT_TOKEN }} >> ${{ env.ENV_FILE }}
           echo DISCORD_PUBLIC_KEY=${{ env.DISCORD_PUBLIC_KEY }} >> ${{ env.ENV_FILE }}
           echo FRONTEND_URL=${{ env.FRONTEND_URL }} >> ${{ env.ENV_FILE }}
+      # The deployment will fail if this doesn't exist
+      - name: Create Output directory
+        run: mkdir discord/public
       - uses: amondnet/vercel-action@v20
         id: discord_deploy
         with:

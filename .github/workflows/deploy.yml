@@ -17,17 +17,27 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
       VERCEL_BACKEND_PROJECT_ID: ${{ secrets.VERCEL_BACKEND_PROJECT_ID }}
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
+      ENV_FILE: ./backend/.env
     steps:
       - name: Check Variables
         uses: 0xJem/secret-gate-action@v1.1.1
         with:
-          inputsToCheck: VERCEL_TOKEN,GITHUB_TOKEN,VERCEL_ORG_ID,VERCEL_BACKEND_PROJECT_ID
+          inputsToCheck: VERCEL_TOKEN,GITHUB_TOKEN,VERCEL_ORG_ID,VERCEL_BACKEND_PROJECT_ID,JWT_SECRET,DISCORD_BOT_TOKEN
+          # ,DISCORD_SERVER_ID,DISCORD_ROLE_ID,HASURA_ENDPOINT,HASURA_ADMIN_SECRET,ALCHEMY_MAINNET_API_KEY,ALCHEMY_RINKEBY_API_KEY,COVALENTHQ_API_KEY,ETHERSCAN_API_KEY,MORALIS_API_KEY
           failOnMissing: true
       - uses: actions/checkout@v2
       - name: Setup node
         uses: actions/setup-node@v2
         with:
           node-version-file: "backend/.nvmrc"
+      # Write variables that will be used by Vercel during deployment
+      - name: Write environment
+        run: |
+          touch ${{ env.ENV_FILE }}
+          echo JWT_SECRET=${{ env.JWT_SECRET }} >> ${{ env.ENV_FILE }}
+          echo DISCORD_BOT_TOKEN=${{ env.DISCORD_BOT_TOKEN }} >> ${{ env.ENV_FILE }}
       - uses: amondnet/vercel-action@v20
         id: backend_deploy
         with:
@@ -47,6 +57,7 @@ jobs:
       VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
       VERCEL_FRONTEND_PROJECT_ID: ${{ secrets.VERCEL_FRONTEND_PROJECT_ID }}
       NEXT_PUBLIC_BACKEND_API_URL: ${{ needs.backend.outputs.preview-url }}
+      ENV_FILE: ./frontend/.env
     steps:
       - name: Check Variables
         uses: 0xJem/secret-gate-action@v1.1.1
@@ -60,7 +71,9 @@ jobs:
           node-version-file: "frontend/.nvmrc"
       # Write variables that will be used by Vercel during deployment
       - name: Write environment
-        run: echo NEXT_PUBLIC_BACKEND_API_URL=${{ needs.backend.outputs.preview-url }} >> ./frontend/.env
+        run: |
+          touch ${{ env.ENV_FILE }}
+          echo NEXT_PUBLIC_BACKEND_API_URL=${{ env.NEXT_PUBLIC_BACKEND_API_URL }} >> ${{ env.ENV_FILE }}
       - uses: amondnet/vercel-action@v20
         id: frontend_deploy
         with:

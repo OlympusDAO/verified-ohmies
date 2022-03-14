@@ -10,7 +10,7 @@
     "build": "yarn typechain:build && tsc",
     "lint": "npx eslint --ext .ts .",
     "lint:fix": "npx eslint --ext .ts . --fix",
-    "typechain:build": "yarn run typechain --target ethers-v5 --out-dir typechain abi/*.json abi/**/*.json && pwd && ls"
+    "typechain:build": "yarn run typechain --target ethers-v5 --out-dir typechain abi/*.json abi/**/*.json && ls typechain"
   },
   "dependencies": {
     "ethers": "^5.0.17",

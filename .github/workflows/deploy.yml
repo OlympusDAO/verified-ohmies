@@ -92,11 +92,13 @@ jobs:
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
       JWT_EXPIRATION_TIME: ${{ secrets.JWT_EXPIRATION_TIME }}
       FRONTEND_URL: ${{ needs.frontend.outputs.preview-url }}
+      VERCEL_DISCORD_PROJECT_ID: ${{ secrets.VERCEL_DISCORD_PROJECT_ID }}
+      ENV_FILE: ./discord/.env
     steps:
       - name: Check Variables
         uses: 0xJem/secret-gate-action@v1.1.1
         with:
-          inputsToCheck: DISCORD_APP_ID,DISCORD_BOT_TOKEN,DISCORD_PUBLIC_KEY,JWT_SECRET,JWT_EXPIRATION_TIME,FRONTEND_URL
+          inputsToCheck: DISCORD_APP_ID,DISCORD_BOT_TOKEN,DISCORD_PUBLIC_KEY,JWT_SECRET,JWT_EXPIRATION_TIME,FRONTEND_URL,VERCEL_DISCORD_PROJECT_ID
           failOnMissing: true
       - uses: actions/checkout@v2
       - name: Setup node
@@ -109,6 +111,24 @@ jobs:
       - name: Sync Discord commands
         run: yarn run slash-up sync
         working-directory: ./discord
+      # Write variables that will be used by Vercel during deployment
+      - name: Write environment
+        run: |
+          touch ${{ env.ENV_FILE }}
+          echo JWT_SECRET=${{ env.JWT_SECRET }} >> ${{ env.ENV_FILE }}
+          echo JWT_EXPIRATION_TIME=${{ env.JWT_EXPIRATION_TIME }} >> ${{ env.ENV_FILE }}
+          echo DISCORD_APP_ID=${{ env.DISCORD_APP_ID }} >> ${{ env.ENV_FILE }}
+          echo DISCORD_BOT_TOKEN=${{ env.DISCORD_BOT_TOKEN }} >> ${{ env.ENV_FILE }}
+          echo DISCORD_PUBLIC_KEY=${{ env.DISCORD_PUBLIC_KEY }} >> ${{ env.ENV_FILE }}
+          echo FRONTEND_URL=${{ env.FRONTEND_URL }} >> ${{ env.ENV_FILE }}
+      - uses: amondnet/vercel-action@v20
+        id: discord_deploy
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_DISCORD_PROJECT_ID }}
+          working-directory: ./discord
 
   # TODO prod flag
   # TODO prod domain

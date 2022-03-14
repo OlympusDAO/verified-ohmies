@@ -56,10 +56,7 @@ Alternatively, you can utilise the secrets stored in Vercel:
 
 JWT is used to sign messages sent between the backend and other services.
 
-There are two environment variables that are relevant to this:
-
-- `JWT_SECRET`: a sufficiently-long randomly-generated secret. The following command will generate the secret: `node -e "console.log(require('crypto').randomBytes(256).toString('base64'));"`
-- `JWT_EXPIRATION_TIME`: the number of seconds that the JWT signature will be valid for. Recommended: 60
+To generate the JWT secret: `node -e "console.log(require('crypto').randomBytes(256).toString('base64'));"`
 
 ### Discord
 

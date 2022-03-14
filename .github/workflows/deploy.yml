@@ -12,7 +12,17 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       preview-url: ${{ steps.backend_deploy.outputs.preview-url }}
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_BACKEND_PROJECT_ID: ${{ secrets.VERCEL_BACKEND_PROJECT_ID }}
     steps:
+      - name: Check Variables
+        uses: 0xJem/secret-gate-action@v1.1.1
+        with:
+          inputsToCheck: VERCEL_TOKEN,GITHUB_TOKEN,VERCEL_ORG_ID,VERCEL_BACKEND_PROJECT_ID
+          failOnMissing: true
       - uses: actions/checkout@v2
       - name: Setup node
         uses: actions/setup-node@v2
@@ -31,7 +41,18 @@ jobs:
     outputs:
       preview-url: ${{ steps.frontend_deploy.outputs.preview-url }}
     needs: backend
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_FRONTEND_PROJECT_ID: ${{ secrets.VERCEL_FRONTEND_PROJECT_ID }}
+      NEXT_PUBLIC_BACKEND_API_URL: ${{ needs.backend.outputs.preview-url }}
     steps:
+      - name: Check Variables
+        uses: 0xJem/secret-gate-action@v1.1.1
+        with:
+          inputsToCheck: VERCEL_TOKEN,GITHUB_TOKEN,VERCEL_ORG_ID,VERCEL_FRONTEND_PROJECT_ID,NEXT_PUBLIC_BACKEND_API_URL
+          failOnMissing: true
       - uses: actions/checkout@v2
       - name: Setup node
         uses: actions/setup-node@v2

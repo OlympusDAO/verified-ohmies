@@ -23,8 +23,8 @@ The following secrets need to be defined in the GitHub repo in order for continu
 - `DISCORD_APP_ID`
 - `DISCORD_BOT_TOKEN`
 - `DISCORD_PUBLIC_KEY`
-- `JWT_SECRET`
-- `JWT_EXPIRATION_TIME`
+- `JWT_SECRET`: the JWT secret shared between the backend and discord. See the `backend/README.md` file for information.
+- `JWT_EXPIRATION_TIME`: the number of seconds that the JWT signature will be valid for. Recommended: 60
 
 The following are generated at deployment-time:
 

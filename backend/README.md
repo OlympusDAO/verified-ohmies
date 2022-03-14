@@ -41,9 +41,9 @@ This back-end infrastructure is composed by two different API endpoints, which c
 - A Covalent API Key
 - Optional: An Etherscan API Key if you want to test on Rinkeby Testnet
 
-### Setup
+## Setup
 
-#### Secrets
+### Secrets
 
 To run locally, you can populate a `.env` file manually using `.env.example`.
 
@@ -52,7 +52,16 @@ Alternatively, you can utilise the secrets stored in Vercel:
 1. Login (if not already): `vercel login`
 2. `vercel pull`: this will populate a `.env` file with secrets from the `Development` environment
 
-##### Discord
+### JWT
+
+JWT is used to sign messages sent between the backend and other services.
+
+There are two environment variables that are relevant to this:
+
+- `JWT_SECRET`: a sufficiently-long randomly-generated secret. The following command will generate the secret: `node -e "console.log(require('crypto').randomBytes(256).toString('base64'));"`
+- `JWT_EXPIRATION_TIME`: the number of seconds that the JWT signature will be valid for. Recommended: 60
+
+### Discord
 
 - Create a Discord server if you don't have one already. Create the role you want to give the user after they've authenticated with Ethereum. For example, I named my role `verified`.
 
@@ -63,7 +72,7 @@ Alternatively, you can utilise the secrets stored in Vercel:
 
 ![Discord OAuth2 Permissions](img/discord-oauth2-permissions.png)
 
-##### Install dependencies locally
+### Install dependencies locally
 
 ```sh
 # To run the project locally
@@ -79,7 +88,7 @@ yarn config set ignore-engines true
 yarn install --network-concurrency 1
 ```
 
-##### TODO on Vercel project repo
+### TODO on Vercel project repo
 
 - Create the same `.env.example` variables on the Vercel project
 - Override the project's install command to: `yarn config set ignore-engines true && yarn install --network-concurrency 1` to avoid the error that appears because of the Node version.
@@ -107,7 +116,7 @@ Vercel:
 The app requires the following environment variables to be present:
 
 - `DISCORD_BOT_TOKEN`:
-- `JWT_SECRET`:
+- `JWT_SECRET`: the JWT secret shared between the backend and discord. See [above](#JWT)
 - `MORALIS_API_KEY`:
 - `ETHERSCAN_API_KEY`:
 - `COVALENTHQ_API_KEY`:

@@ -9,7 +9,7 @@
   "scripts": {
     "sync": "yarn run slash-up sync",
     "sync:dev": "yarn run slash-up sync -e development",
-    "build": "tsc",
+    "build": "mkdir -p public && tsc",
     "lint": "npx eslint --ext .ts .",
     "lint:fix": "npx eslint --ext .ts . --fix"
   },

@@ -93,7 +93,7 @@ jobs:
       JWT_EXPIRATION_TIME: ${{ secrets.JWT_EXPIRATION_TIME }}
       FRONTEND_URL: ${{ needs.frontend.outputs.preview-url }}
       VERCEL_DISCORD_PROJECT_ID: ${{ secrets.VERCEL_DISCORD_PROJECT_ID }}
-      ENV_FILE: ./discord/.env
+      ENV_FILE: .env
     steps:
       - name: Check Variables
         uses: 0xJem/secret-gate-action@v1.1.1
@@ -115,13 +115,19 @@ jobs:
       # Vercel will return a non-zero error code when adding an existing environment variable, so we remove first
       # Vercel will return a non-zero error code when removing a non-existent environment variable, so we capture that
       - name: Write environment to Vercel
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_DISCORD_PROJECT_ID }}
         run: |
-          (vercel env rm JWT_SECRET || exit 0) && echo ${{ env.JWT_SECRET }} > ./discord/secret.txt && vercel env add JWT_SECRET preview < ./discord/secret.txt
-          (vercel env rm JWT_EXPIRATION_TIME || exit 0) && echo ${{ env.JWT_EXPIRATION_TIME }} > ./discord/secret.txt && vercel env add JWT_EXPIRATION_TIME preview < ./discord/secret.txt
-          (vercel env rm DISCORD_APP_ID || exit 0) && echo ${{ env.DISCORD_APP_ID }} > ./discord/secret.txt && vercel env add DISCORD_APP_ID preview < ./discord/secret.txt
-          (vercel env rm DISCORD_BOT_TOKEN || exit 0) && echo ${{ env.DISCORD_BOT_TOKEN }} > ./discord/secret.txt && vercel env add DISCORD_BOT_TOKEN preview < ./discord/secret.txt
-          (vercel env rm DISCORD_PUBLIC_KEY || exit 0) && echo ${{ env.DISCORD_PUBLIC_KEY }} > ./discord/secret.txt && vercel env add DISCORD_PUBLIC_KEY preview < ./discord/secret.txt
-          (vercel env rm FRONTEND_URL || exit 0) && echo ${{ env.FRONTEND_URL }} > ./discord/secret.txt && vercel env add FRONTEND_URL preview < ./discord/secret.txt
+          cd discord
+          vercel login --token ${{ env.VERCEL_TOKEN }}
+          (vercel env rm JWT_SECRET || exit 0) && echo ${{ env.JWT_SECRET }} > secret.txt && vercel env add JWT_SECRET preview < secret.txt
+          (vercel env rm JWT_EXPIRATION_TIME || exit 0) && echo ${{ env.JWT_EXPIRATION_TIME }} > secret.txt && vercel env add JWT_EXPIRATION_TIME preview < secret.txt
+          (vercel env rm DISCORD_APP_ID || exit 0) && echo ${{ env.DISCORD_APP_ID }} > secret.txt && vercel env add DISCORD_APP_ID preview < secret.txt
+          (vercel env rm DISCORD_BOT_TOKEN || exit 0) && echo ${{ env.DISCORD_BOT_TOKEN }} > secret.txt && vercel env add DISCORD_BOT_TOKEN preview < secret.txt
+          (vercel env rm DISCORD_PUBLIC_KEY || exit 0) && echo ${{ env.DISCORD_PUBLIC_KEY }} > secret.txt && vercel env add DISCORD_PUBLIC_KEY preview < secret.txt
+          (vercel env rm FRONTEND_URL || exit 0) && echo ${{ env.FRONTEND_URL }} > secret.txt && vercel env add FRONTEND_URL preview < secret.txt
       - uses: amondnet/vercel-action@v20
         id: discord_deploy
         with:

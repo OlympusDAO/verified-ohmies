@@ -110,7 +110,7 @@ Vercel:
 - `VERCEL_BACKEND_PROJECT_ID`: The Vercel project ID
 - `VERCEL_TOKEN`:
 
-The app requires the following environment variables to be present:
+The following environment variables need to be present in GitHub Actions, and will be passed to Vercel.
 
 - `DISCORD_BOT_TOKEN`:
 - `JWT_SECRET`: the JWT secret shared between the backend and discord. See [above](#JWT)
@@ -121,18 +121,6 @@ The app requires the following environment variables to be present:
 - `ALCHEMY_RINKEBY_API_KEY`:
 - `HASURA_ENDPOINT`:
 - `HASURA_ADMIN_SECRET`:
-
-These values need to be set manually through the Vercel interface or the CLI (using `vercel env`: <https://vercel.com/docs/concepts/projects/environment-variables>)
-
-### On your Discord app
-
-- In the tab `General Information`, there's a field called `INTERACTIONS ENDPOINT URL`.
-- Copy into that field the URL where the back-end is hosted with the API call. e.g. `https://eth-auth-backend.vercel.app/api/v1/command-interactions`
-- Click `Save Changes`.
-
-> If Discord was able to successfuly ping our server you'll get a message saying "All your edits have been carefully recorded" at the top of the screen.
-
-> Now, the previous two steps serve to sync the Discord commands and tell Discord where our back-end is. This back-end endpoint which interacts with Discord will only serve to generate the URL with the JWT for authentication.
 
 ### Future Improvements
 

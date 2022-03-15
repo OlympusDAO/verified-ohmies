@@ -121,13 +121,12 @@ jobs:
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_DISCORD_PROJECT_ID }}
         run: |
           cd discord
-          vercel login --token ${{ env.VERCEL_TOKEN }}
-          (vercel env rm JWT_SECRET || exit 0) && echo ${{ env.JWT_SECRET }} > secret.txt && vercel env add JWT_SECRET preview < secret.txt
-          (vercel env rm JWT_EXPIRATION_TIME || exit 0) && echo ${{ env.JWT_EXPIRATION_TIME }} > secret.txt && vercel env add JWT_EXPIRATION_TIME preview < secret.txt
-          (vercel env rm DISCORD_APP_ID || exit 0) && echo ${{ env.DISCORD_APP_ID }} > secret.txt && vercel env add DISCORD_APP_ID preview < secret.txt
-          (vercel env rm DISCORD_BOT_TOKEN || exit 0) && echo ${{ env.DISCORD_BOT_TOKEN }} > secret.txt && vercel env add DISCORD_BOT_TOKEN preview < secret.txt
-          (vercel env rm DISCORD_PUBLIC_KEY || exit 0) && echo ${{ env.DISCORD_PUBLIC_KEY }} > secret.txt && vercel env add DISCORD_PUBLIC_KEY preview < secret.txt
-          (vercel env rm FRONTEND_URL || exit 0) && echo ${{ env.FRONTEND_URL }} > secret.txt && vercel env add FRONTEND_URL preview < secret.txt
+          (vercel --token ${{ env.VERCEL_TOKEN }} env rm JWT_SECRET || exit 0) && echo ${{ env.JWT_SECRET }} > secret.txt && vercel --token ${{ env.VERCEL_TOKEN }} env add JWT_SECRET preview < secret.txt
+          (vercel --token ${{ env.VERCEL_TOKEN }} env rm JWT_EXPIRATION_TIME || exit 0) && echo ${{ env.JWT_EXPIRATION_TIME }} > secret.txt && vercel --token ${{ env.VERCEL_TOKEN }} env add JWT_EXPIRATION_TIME preview < secret.txt
+          (vercel --token ${{ env.VERCEL_TOKEN }} env rm DISCORD_APP_ID || exit 0) && echo ${{ env.DISCORD_APP_ID }} > secret.txt && vercel --token ${{ env.VERCEL_TOKEN }} env add DISCORD_APP_ID preview < secret.txt
+          (vercel --token ${{ env.VERCEL_TOKEN }} env rm DISCORD_BOT_TOKEN || exit 0) && echo ${{ env.DISCORD_BOT_TOKEN }} > secret.txt && vercel --token ${{ env.VERCEL_TOKEN }} env add DISCORD_BOT_TOKEN preview < secret.txt
+          (vercel --token ${{ env.VERCEL_TOKEN }} env rm DISCORD_PUBLIC_KEY || exit 0) && echo ${{ env.DISCORD_PUBLIC_KEY }} > secret.txt && vercel --token ${{ env.VERCEL_TOKEN }} env add DISCORD_PUBLIC_KEY preview < secret.txt
+          (vercel --token ${{ env.VERCEL_TOKEN }} env rm FRONTEND_URL || exit 0) && echo ${{ env.FRONTEND_URL }} > secret.txt && vercel --token ${{ env.VERCEL_TOKEN }} env add FRONTEND_URL preview < secret.txt
       - uses: amondnet/vercel-action@v20
         id: discord_deploy
         with:

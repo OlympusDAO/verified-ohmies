@@ -119,12 +119,12 @@ jobs:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_DISCORD_PROJECT_ID }}
         run: |
-          vercel --token ${{ env.VERCEL_TOKEN }} env ls preview | grep -q "JWT_SECRET" || exit 1
-          vercel --token ${{ env.VERCEL_TOKEN }} env ls preview | grep -q "JWT_EXPIRATION_TIME" || exit 1
-          vercel --token ${{ env.VERCEL_TOKEN }} env ls preview | grep -q "DISCORD_APP_ID" || exit 1
-          vercel --token ${{ env.VERCEL_TOKEN }} env ls preview | grep -q "DISCORD_BOT_TOKEN" || exit 1
-          vercel --token ${{ env.VERCEL_TOKEN }} env ls preview | grep -q "DISCORD_PUBLIC_KEY" || exit 1
-          vercel --token ${{ env.VERCEL_TOKEN }} env ls preview | grep -q "FRONTEND_URL" || exit 1
+          vercel --token ${{ env.VERCEL_TOKEN }} env ls preview | grep -q "JWT_SECRET" || (echo "JWT_SECRET variable is missing in Vercel." && exit 1)
+          vercel --token ${{ env.VERCEL_TOKEN }} env ls preview | grep -q "JWT_EXPIRATION_TIME" || (echo "JWT_EXPIRATION_TIME variable is missing in Vercel." && exit 1)
+          vercel --token ${{ env.VERCEL_TOKEN }} env ls preview | grep -q "DISCORD_APP_ID" || (echo "DISCORD_APP_ID variable is missing in Vercel." && exit 1)
+          vercel --token ${{ env.VERCEL_TOKEN }} env ls preview | grep -q "DISCORD_BOT_TOKEN" || (echo "DISCORD_BOT_TOKEN variable is missing in Vercel." && exit 1)
+          vercel --token ${{ env.VERCEL_TOKEN }} env ls preview | grep -q "DISCORD_PUBLIC_KEY" || (echo "DISCORD_PUBLIC_KEY variable is missing in Vercel." && exit 1)
+          vercel --token ${{ env.VERCEL_TOKEN }} env ls preview | grep -q "FRONTEND_URL" || (echo "FRONTEND_URL variable is missing in Vercel." && exit 1)
       - uses: amondnet/vercel-action@v20
         id: discord_deploy
         with:

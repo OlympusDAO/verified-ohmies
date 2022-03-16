@@ -51,8 +51,7 @@ jobs:
       - name: Deploy Backend
         run: |
           cd backend
-          vercel --token ${{ env.VERCEL_TOKEN }} -e VERCEL_PROJECT_ID=${{ env.VERCEL_BACKEND_PROJECT_ID }} \
-            -e VERCEL_ORG_ID=${{ env.VERCEL_ORG_ID }} -e JWT_SECRET=${{ env.JWT_SECRET }} -e DISCORD_BOT_TOKEN=${{ env.DISCORD_BOT_TOKEN }}
+          vercel --token ${{ env.VERCEL_TOKEN }} -b VERCEL_PROJECT_ID=${{ env.VERCEL_BACKEND_PROJECT_ID }} -b VERCEL_ORG_ID=${{ env.VERCEL_ORG_ID }} -e JWT_SECRET=${{ env.JWT_SECRET }} -e DISCORD_BOT_TOKEN=${{ env.DISCORD_BOT_TOKEN }}
   frontend:
     runs-on: ubuntu-latest
     outputs:

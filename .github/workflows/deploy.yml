@@ -33,19 +33,26 @@ jobs:
         with:
           node-version-file: "backend/.nvmrc"
       # Write variables that will be used by Vercel during deployment
-      - name: Write environment
+      # - name: Write environment
+      #   run: |
+      #     touch ${{ env.ENV_FILE }}
+      #     echo JWT_SECRET=${{ env.JWT_SECRET }} >> ${{ env.ENV_FILE }}
+      #     echo DISCORD_BOT_TOKEN=${{ env.DISCORD_BOT_TOKEN }} >> ${{ env.ENV_FILE }}
+
+      # TODO manual deployment? Works fine locally
+      # - uses: amondnet/vercel-action@v20
+      #   id: backend_deploy
+      #   with:
+      #     vercel-token: ${{ secrets.VERCEL_TOKEN }}
+      #     github-token: ${{ secrets.GITHUB_TOKEN }}
+      #     vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+      #     vercel-project-id: ${{ secrets.VERCEL_BACKEND_PROJECT_ID }}
+      #     working-directory: ./backend
+      - name: Deploy Backend
         run: |
-          touch ${{ env.ENV_FILE }}
-          echo JWT_SECRET=${{ env.JWT_SECRET }} >> ${{ env.ENV_FILE }}
-          echo DISCORD_BOT_TOKEN=${{ env.DISCORD_BOT_TOKEN }} >> ${{ env.ENV_FILE }}
-      - uses: amondnet/vercel-action@v20
-        id: backend_deploy
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_BACKEND_PROJECT_ID }}
-          working-directory: ./backend
+          cd backend
+          vercel --token ${{ env.VERCEL_TOKEN }} -e VERCEL_PROJECT_ID=${{ env.VERCEL_BACKEND_PROJECT_ID }} \
+            -e VERCEL_ORG_ID=${{ env.VERCEL_ORG_ID }} -e JWT_SECRET=${{ env.JWT_SECRET }} -e DISCORD_BOT_TOKEN=${{ env.DISCORD_BOT_TOKEN }}
   frontend:
     runs-on: ubuntu-latest
     outputs:
@@ -109,6 +116,7 @@ jobs:
         working-directory: ./discord
       # Due to limitations with the Vercel API, we can't currently automate secrets management
       # What we can do is check that the environment is sufficient
+      # TODO deploy with vercel -e?
       - name: Write environment to Vercel
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}

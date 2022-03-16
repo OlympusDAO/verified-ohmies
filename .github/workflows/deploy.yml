@@ -33,26 +33,19 @@ jobs:
         with:
           node-version-file: "backend/.nvmrc"
       # Write variables that will be used by Vercel during deployment
-      # - name: Write environment
-      #   run: |
-      #     touch ${{ env.ENV_FILE }}
-      #     echo JWT_SECRET=${{ env.JWT_SECRET }} >> ${{ env.ENV_FILE }}
-      #     echo DISCORD_BOT_TOKEN=${{ env.DISCORD_BOT_TOKEN }} >> ${{ env.ENV_FILE }}
-
-      # TODO manual deployment? Works fine locally
-      # - uses: amondnet/vercel-action@v20
-      #   id: backend_deploy
-      #   with:
-      #     vercel-token: ${{ secrets.VERCEL_TOKEN }}
-      #     github-token: ${{ secrets.GITHUB_TOKEN }}
-      #     vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-      #     vercel-project-id: ${{ secrets.VERCEL_BACKEND_PROJECT_ID }}
-      #     working-directory: ./backend
-      # Uses VERCEL_ORG_ID and VERCEL_PROJECT_ID to deploy to the correct project
-      - name: Deploy Backend
+      - name: Write environment
         run: |
-          cd backend
-          vercel --token ${{ env.VERCEL_TOKEN }} -e JWT_SECRET=${{ env.JWT_SECRET }} -e DISCORD_BOT_TOKEN=${{ env.DISCORD_BOT_TOKEN }}
+          touch ${{ env.ENV_FILE }}
+          echo JWT_SECRET=${{ env.JWT_SECRET }} >> ${{ env.ENV_FILE }}
+          echo DISCORD_BOT_TOKEN=${{ env.DISCORD_BOT_TOKEN }} >> ${{ env.ENV_FILE }}
+      - uses: amondnet/vercel-action@v20
+        id: backend_deploy
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          working-directory: ./backend
   frontend:
     runs-on: ubuntu-latest
     outputs:

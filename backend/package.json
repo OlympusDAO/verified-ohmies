@@ -10,7 +10,7 @@
     "build": "yarn typechain:build && tsc",
     "lint": "npx eslint --ext .ts .",
     "lint:fix": "npx eslint --ext .ts . --fix",
-    "typechain:build": "pwd && ls && ls /vercel && yarn run typechain --target ethers-v5 --out-dir typechain abi/*.json abi/**/*.json && ls && ls typechain && cat typechain/index.ts && cat typechain/OlympusStakingv2.ts && cat typechain/factories/OlympusStakingv2__factory.ts && ls /vercel/4284d96b38edb541"
+    "typechain:build": "yarn run typechain --target ethers-v5 --out-dir typechain abi/*.json abi/**/*.json"
   },
   "dependencies": {
     "ethers": "^5.0.17",

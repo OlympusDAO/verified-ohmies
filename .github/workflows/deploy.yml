@@ -16,7 +16,7 @@ jobs:
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-      VERCEL_BACKEND_PROJECT_ID: ${{ secrets.VERCEL_BACKEND_PROJECT_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_BACKEND_PROJECT_ID }}
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
       DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
       ENV_FILE: ./backend/.env
@@ -48,10 +48,11 @@ jobs:
       #     vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
       #     vercel-project-id: ${{ secrets.VERCEL_BACKEND_PROJECT_ID }}
       #     working-directory: ./backend
+      # Uses VERCEL_ORG_ID and VERCEL_PROJECT_ID to deploy to the correct project
       - name: Deploy Backend
         run: |
           cd backend
-          vercel --token ${{ env.VERCEL_TOKEN }} -b VERCEL_PROJECT_ID=${{ env.VERCEL_BACKEND_PROJECT_ID }} -b VERCEL_ORG_ID=${{ env.VERCEL_ORG_ID }} -e JWT_SECRET=${{ env.JWT_SECRET }} -e DISCORD_BOT_TOKEN=${{ env.DISCORD_BOT_TOKEN }}
+          vercel --token ${{ env.VERCEL_TOKEN }} -e JWT_SECRET=${{ env.JWT_SECRET }} -e DISCORD_BOT_TOKEN=${{ env.DISCORD_BOT_TOKEN }}
   frontend:
     runs-on: ubuntu-latest
     outputs:

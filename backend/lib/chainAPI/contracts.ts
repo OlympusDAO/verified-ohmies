@@ -1,4 +1,4 @@
-import { OlympusStakingv2__factory } from "../../typechain";
+import { OlympusStakingv2__factory } from "../typechain";
 import { Addresses, ChainId } from "../../constants";
 import { ethers } from "ethers";
 

@@ -116,8 +116,8 @@ jobs:
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-org-id: ${{ env.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ env.VERCEL_PROJECT_ID }}
           working-directory: ./discord
           vercel-args: -e JWT_SECRET=${{ env.JWT_SECRET }} -e JWT_EXPIRATION_TIME=${{ env.JWT_EXPIRATION_TIME }} -e DISCORD_APP_ID=${{ env.DISCORD_APP_ID }} -e DISCORD_BOT_TOKEN=${{ env.DISCORD_BOT_TOKEN }} -e DISCORD_PUBLIC_KEY=${{ env.DISCORD_PUBLIC_KEY }} -e FRONTEND_URL=${{ env.FRONTEND_URL }}
 

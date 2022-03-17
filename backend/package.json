@@ -8,7 +8,7 @@
   },
   "scripts": {
     "build": "yarn typechain:build && yarn run tsc",
-    "deploy:preview": "source .env && yarn run vercel --env JWT_SECRET=\"$JWT_SECRET\" --env DISCORD_BOT_TOKEN=\"$DISCORD_BOT_TOKEN\" --env DISCORD_SERVER_ID=\"$DISCORD_SERVER_ID\" --env DISCORD_ROLE_ID=\"DISCORD_ROLE_ID\" --env HASURA_ENDPOINT=\"HASURA_ENDPOINT\" --env HASURA_ADMIN_SECRET=\"HASURA_ADMIN_SECRET\" --env MORALIS_API_KEY=\"MORALIS_API_KEY\" --env ETHERSCAN_API_KEY=\"ETHERSCAN_API_KEY\" --env COVALENTHQ_API_KEY=\"COVALENTHQ_API_KEY\" --env ALCHEMY_MAINNET_API_KEY=\"ALCHEMY_MAINNET_API_KEY\" --env ALCHEMY_RINKEBY_API_KEY=\"ALCHEMY_RINKEBY_API_KEY\"",
+    "deploy:preview": "source .env && yarn run vercel --env JWT_SECRET=\"$JWT_SECRET\" --env DISCORD_BOT_TOKEN=\"$DISCORD_BOT_TOKEN\" --env DISCORD_SERVER_ID=\"$DISCORD_SERVER_ID\" --env DISCORD_ROLE_ID=\"$DISCORD_ROLE_ID\" --env HASURA_ENDPOINT=\"$HASURA_ENDPOINT\" --env HASURA_ADMIN_SECRET=\"$HASURA_ADMIN_SECRET\" --env MORALIS_API_KEY=\"$MORALIS_API_KEY\" --env ETHERSCAN_API_KEY=\"$ETHERSCAN_API_KEY\" --env COVALENTHQ_API_KEY=\"$COVALENTHQ_API_KEY\" --env ALCHEMY_MAINNET_API_KEY=\"$ALCHEMY_MAINNET_API_KEY\" --env ALCHEMY_RINKEBY_API_KEY=\"$ALCHEMY_RINKEBY_API_KEY\"",
     "lint": "npx eslint --ext .ts .",
     "lint:fix": "npx eslint --ext .ts . --fix",
     "typechain:build": "yarn run typechain --target ethers-v5 --out-dir lib/typechain abi/*.json abi/**/*.json"

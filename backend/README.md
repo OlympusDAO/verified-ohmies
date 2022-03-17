@@ -115,7 +115,7 @@ The following environment variables need to be present in GitHub Actions, and wi
 - `JWT_SECRET`: the JWT secret shared between the backend and discord. See [above](#JWT)
 - `DISCORD_BOT_TOKEN`:
 - `DISCORD_SERVER_ID`: Right-click your server on Discord and select Copy ID to get this
-- `DISCORD_ROLE_ID`: Right-click your server on Discord -> Server Settings -> Roles -> "..."
+- `DISCORD_ROLE_ID`: Right-click your server on Discord -> Server Settings -> Roles -> "...". There may be a role already created by the bot integration, but that likely won't work, and you'll need to create a new role.
 - `HASURA_ENDPOINT`:
 - `HASURA_ADMIN_SECRET`:
 - `MORALIS_API_KEY`: Click on your profile picture (top-right), then "API", then copy the value next to "Web3 API Key"

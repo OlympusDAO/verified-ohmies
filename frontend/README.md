@@ -57,6 +57,11 @@ The following secrets need to be defined in the GitHub repo in order for continu
 - `VERCEL_TOKEN`:
 - `INFURA_PROJECT_ID`:
 
+## Supported Networks
+
+- Production builds only support Ethereum mainnet, otherwise a user could have tokens on a testnet and feature the role in the Discord server.
+- All other builds support Ethereum mainnet and Ethereum rinkeby testnet.
+
 ### Future Improvements
 
 - Add landing page for returning users which confirms that they're already authenticated. Also add the possibility to remove authentication and remove their data from our servers.

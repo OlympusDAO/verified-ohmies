@@ -31,6 +31,8 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version-file: "backend/.nvmrc"
+      - name: Build
+        run: yarn run build
       - uses: amondnet/vercel-action@v20
         id: backend_deploy
         with:
@@ -62,7 +64,6 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version-file: "frontend/.nvmrc"
-      - run: echo ${{ env.NEXT_PUBLIC_BACKEND_API_URL }}
       - uses: amondnet/vercel-action@v20
         id: frontend_deploy
         with:

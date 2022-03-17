@@ -3,6 +3,7 @@ name: Deploy
 on:
   pull_request:
     branches: [main, develop]
+  workflow_dispatch:
 
 # Vercel requires one project for each directory in a monorepo:
 # https://vercel.com/blog/monorepos

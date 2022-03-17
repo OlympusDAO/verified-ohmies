@@ -58,6 +58,7 @@ const auth = async (request: VercelRequest, response: VercelResponse) => {
       else if (error instanceof jwt.JsonWebTokenError) errorMessage = JWT_INVALID_ERROR;
       else errorMessage = error.message;
       console.log(`/api/v1/authentication GET error: ${errorMessage} (discordUserId: ${discordUserId})`);
+      console.log(`Stack trace:\n${error.stack}`);
       response.status(500).send({ error: errorMessage });
     }
   } else if (request.method == "POST") {
@@ -110,6 +111,7 @@ const auth = async (request: VercelRequest, response: VercelResponse) => {
       else if (error instanceof jwt.JsonWebTokenError) errorMessage = JWT_INVALID_ERROR;
       else errorMessage = error.message;
       console.log(`/api/v1/authentication POST error: ${errorMessage} (discordUserId: ${discordUserId})`);
+      console.log(`Stack trace:\n${error.stack}`);
       response.status(500).send({ error: errorMessage });
     }
   }

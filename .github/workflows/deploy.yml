@@ -42,7 +42,7 @@ jobs:
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
           working-directory: ./backend
-          vercel-args: -e JWT_SECRET=${{ env.JWT_SECRET }} -e DISCORD_BOT_TOKEN=${{ env.DISCORD_BOT_TOKEN }}
+          vercel-args: --env JWT_SECRET=${{ env.JWT_SECRET }} --env DISCORD_BOT_TOKEN=${{ env.DISCORD_BOT_TOKEN }}
   frontend:
     runs-on: ubuntu-latest
     outputs:
@@ -53,12 +53,12 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
       VERCEL_PROJECT_ID: ${{ secrets.VERCEL_FRONTEND_PROJECT_ID }}
-      NEXT_PUBLIC_BACKEND_API_URL: ${{ needs.backend.outputs.preview-url }}
+      BACKEND_URL: ${{ needs.backend.outputs.preview-url }}
     steps:
       - name: Check Variables
         uses: 0xJem/secret-gate-action@v1.1.1
         with:
-          inputsToCheck: VERCEL_TOKEN,GITHUB_TOKEN,VERCEL_ORG_ID,VERCEL_PROJECT_ID,NEXT_PUBLIC_BACKEND_API_URL
+          inputsToCheck: VERCEL_TOKEN,GITHUB_TOKEN,VERCEL_ORG_ID,VERCEL_PROJECT_ID,BACKEND_URL
           failOnMissing: true
       - uses: actions/checkout@v2
       - name: Setup node
@@ -73,7 +73,8 @@ jobs:
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
           working-directory: ./frontend
-          vercel-args: -e NEXT_PUBLIC_BACKEND_API_URL=${{ env.NEXT_PUBLIC_BACKEND_API_URL }}
+          # Vercel/Next.js will replace the URL at build-time, not run-time
+          vercel-args: --build-env NEXT_PUBLIC_BACKEND_API_URL=${{ env.BACKEND_URL }}
   discord:
     runs-on: ubuntu-latest
     needs: frontend
@@ -111,7 +112,7 @@ jobs:
           vercel-org-id: ${{ env.VERCEL_ORG_ID }}
           vercel-project-id: ${{ env.VERCEL_PROJECT_ID }}
           working-directory: ./discord
-          vercel-args: -e JWT_SECRET=${{ env.JWT_SECRET }} -e JWT_EXPIRATION_TIME=${{ env.JWT_EXPIRATION_TIME }} -e DISCORD_APP_ID=${{ env.DISCORD_APP_ID }} -e DISCORD_BOT_TOKEN=${{ env.DISCORD_BOT_TOKEN }} -e DISCORD_PUBLIC_KEY=${{ env.DISCORD_PUBLIC_KEY }} -e FRONTEND_URL=${{ env.FRONTEND_URL }}
+          vercel-args: --env JWT_SECRET=${{ env.JWT_SECRET }} --env JWT_EXPIRATION_TIME=${{ env.JWT_EXPIRATION_TIME }} --env DISCORD_APP_ID=${{ env.DISCORD_APP_ID }} --env DISCORD_BOT_TOKEN=${{ env.DISCORD_BOT_TOKEN }} --env DISCORD_PUBLIC_KEY=${{ env.DISCORD_PUBLIC_KEY }} --env FRONTEND_URL=${{ env.FRONTEND_URL }}
 
   # TODO prod flag
   # TODO prod domain

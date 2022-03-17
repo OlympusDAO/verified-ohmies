@@ -22,24 +22,14 @@ GitHub Actions is used to deploy to Vercel the slash commands as a serverless fu
 
 The following secrets need to be defined in the GitHub repo in order for continuous deployment to be successful:
 
-Vercel:
-
 - `VERCEL_ORG_ID`: The Vercel org ID
 - `VERCEL_DISCORD_PROJECT_ID`: The Vercel project ID
 - `VERCEL_TOKEN`:
-
-### Secrets
-
-The following secrets need to be defined in Vercel in order for continuous deployment to be successful:
-
+- `JWT_SECRET`: the JWT secret shared between the backend and discord. See the `backend/README.md` file for information.
+- `JWT_EXPIRATION_TIME`: Recommended: 1d
 - `DISCORD_APP_ID`
 - `DISCORD_BOT_TOKEN`
 - `DISCORD_PUBLIC_KEY`
-- `JWT_SECRET`: the JWT secret shared between the backend and discord. See the `backend/README.md` file for information.
-- `JWT_EXPIRATION_TIME`: Recommended: 1d
-- `FRONTEND_URL`: copy manually from Vercel or the GitHub Actions output
-
-A single secret can have different values in different environments (production, preview and development). It is recommended to have different values in production.
 
 ### Latest Deployment URL
 

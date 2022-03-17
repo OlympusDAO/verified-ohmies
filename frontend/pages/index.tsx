@@ -217,8 +217,6 @@ const Home = ({ initialAppTheme }) => {
     var gOHMBalance = 0;
     var chainData = {};
 
-    console.log("url = " + process.env.NEXT_PUBLIC_BACKEND_API_URL);
-
     if (chainIsSupported) {
       try {
         chainData = getChainData(network.chainId);

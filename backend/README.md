@@ -107,7 +107,7 @@ The following secrets need to be defined in the GitHub repo in order for continu
 Vercel:
 
 - `VERCEL_ORG_ID`: The Vercel org ID
-- `VERCEL_BACKEND_PROJECT_ID`: The Vercel project ID
+- `VERCEL_PROJECT_ID`: The Vercel project ID for the backend
 - `VERCEL_TOKEN`:
 
 The following environment variables need to be present in GitHub Actions, and will be passed to Vercel.

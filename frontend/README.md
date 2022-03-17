@@ -53,13 +53,9 @@ vercel --prod
 The following secrets need to be defined in the GitHub repo in order for continuous deployment to be successful:
 
 - `VERCEL_ORG_ID`: The Vercel org ID
-- `VERCEL_FRONTEND_PROJECT_ID`: The Vercel project ID
+- `VERCEL_PROJECT_ID`: The Vercel project ID for the backend
 - `VERCEL_TOKEN`:
-
-The app requires the following to be run:
-
-- `NEXT_PUBLIC_BACKEND_API_URL`:
-- `NEXT_PUBLIC_INFURA_ID`:
+- `INFURA_KEY`:
 
 ### Future Improvements
 

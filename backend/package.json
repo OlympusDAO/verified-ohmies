@@ -7,7 +7,7 @@
     "node": "14.x"
   },
   "scripts": {
-    "build": "yarn typechain:build && tsc",
+    "build": "yarn typechain:build && yarn run tsc",
     "lint": "npx eslint --ext .ts .",
     "lint:fix": "npx eslint --ext .ts . --fix",
     "typechain:build": "yarn run typechain --target ethers-v5 --out-dir typechain abi/*.json abi/**/*.json"

@@ -19,7 +19,6 @@ jobs:
       VERCEL_PROJECT_ID: ${{ secrets.VERCEL_BACKEND_PROJECT_ID }}
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
       DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
-      ENV_FILE: ./backend/.env
     steps:
       - name: Check Variables
         uses: 0xJem/secret-gate-action@v1.1.1
@@ -32,12 +31,6 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version-file: "backend/.nvmrc"
-      # Write variables that will be used by Vercel during deployment
-      - name: Write environment
-        run: |
-          touch ${{ env.ENV_FILE }}
-          echo JWT_SECRET=${{ env.JWT_SECRET }} >> ${{ env.ENV_FILE }}
-          echo DISCORD_BOT_TOKEN=${{ env.DISCORD_BOT_TOKEN }} >> ${{ env.ENV_FILE }}
       - uses: amondnet/vercel-action@v20
         id: backend_deploy
         with:
@@ -46,6 +39,7 @@ jobs:
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
           working-directory: ./backend
+          vercel-args: -e JWT_SECRET=${{ env.JWT_SECRET }} -e DISCORD_BOT_TOKEN=${{ env.DISCORD_BOT_TOKEN }}
   frontend:
     runs-on: ubuntu-latest
     outputs:
@@ -55,33 +49,28 @@ jobs:
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-      VERCEL_FRONTEND_PROJECT_ID: ${{ secrets.VERCEL_FRONTEND_PROJECT_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_FRONTEND_PROJECT_ID }}
       NEXT_PUBLIC_BACKEND_API_URL: ${{ needs.backend.outputs.preview-url }}
-      ENV_FILE: ./frontend/.env
     steps:
       - name: Check Variables
         uses: 0xJem/secret-gate-action@v1.1.1
         with:
-          inputsToCheck: VERCEL_TOKEN,GITHUB_TOKEN,VERCEL_ORG_ID,VERCEL_FRONTEND_PROJECT_ID,NEXT_PUBLIC_BACKEND_API_URL
+          inputsToCheck: VERCEL_TOKEN,GITHUB_TOKEN,VERCEL_ORG_ID,VERCEL_PROJECT_ID,NEXT_PUBLIC_BACKEND_API_URL
           failOnMissing: true
       - uses: actions/checkout@v2
       - name: Setup node
         uses: actions/setup-node@v2
         with:
           node-version-file: "frontend/.nvmrc"
-      # Write variables that will be used by Vercel during deployment
-      - name: Write environment
-        run: |
-          touch ${{ env.ENV_FILE }}
-          echo NEXT_PUBLIC_BACKEND_API_URL=${{ env.NEXT_PUBLIC_BACKEND_API_URL }} >> ${{ env.ENV_FILE }}
       - uses: amondnet/vercel-action@v20
         id: frontend_deploy
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_FRONTEND_PROJECT_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
           working-directory: ./frontend
+          vercel-args: -e NEXT_PUBLIC_BACKEND_API_URL=${{ env.NEXT_PUBLIC_BACKEND_API_URL }}
   discord:
     runs-on: ubuntu-latest
     needs: frontend

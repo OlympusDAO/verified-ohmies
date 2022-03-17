@@ -86,15 +86,19 @@ jobs:
     runs-on: ubuntu-latest
     needs: frontend
     env:
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      JWT_EXPIRATION_TIME: ${{ secrets.JWT_EXPIRATION_TIME }}
       DISCORD_APP_ID: ${{ secrets.DISCORD_APP_ID }}
       DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
-      VERCEL_DISCORD_PROJECT_ID: ${{ secrets.VERCEL_DISCORD_PROJECT_ID }}
+      DISCORD_PUBLIC_KEY: ${{ secrets.DISCORD_PUBLIC_KEY }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_DISCORD_PROJECT_ID }}
       VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      FRONTEND_URL: ${{ needs.frontend.outputs.preview-url }}
     steps:
       - name: Check Variables
         uses: 0xJem/secret-gate-action@v1.1.1
         with:
-          inputsToCheck: DISCORD_APP_ID,DISCORD_BOT_TOKEN,VERCEL_DISCORD_PROJECT_ID,VERCEL_ORG_ID
+          inputsToCheck: JWT_SECRET,JWT_EXPIRATION_TIME,DISCORD_APP_ID,DISCORD_BOT_TOKEN,DISCORD_PUBLIC_KEY,VERCEL_PROJECT_ID,VERCEL_ORG_ID,FRONTEND_URL
           failOnMissing: true
       - uses: actions/checkout@v2
       - name: Setup node
@@ -107,29 +111,15 @@ jobs:
       - name: Sync Discord commands
         run: yarn run slash-up sync
         working-directory: ./discord
-      # Due to limitations with the Vercel API, we can't currently automate secrets management
-      # What we can do is check that the environment is sufficient
-      # TODO deploy with vercel -e?
-      - name: Write environment to Vercel
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_DISCORD_PROJECT_ID }}
-        run: |
-          vercel --token ${{ env.VERCEL_TOKEN }} env ls preview | grep -q "JWT_SECRET" || (echo "JWT_SECRET variable is missing in Vercel." && exit 1)
-          vercel --token ${{ env.VERCEL_TOKEN }} env ls preview | grep -q "JWT_EXPIRATION_TIME" || (echo "JWT_EXPIRATION_TIME variable is missing in Vercel." && exit 1)
-          vercel --token ${{ env.VERCEL_TOKEN }} env ls preview | grep -q "DISCORD_APP_ID" || (echo "DISCORD_APP_ID variable is missing in Vercel." && exit 1)
-          vercel --token ${{ env.VERCEL_TOKEN }} env ls preview | grep -q "DISCORD_BOT_TOKEN" || (echo "DISCORD_BOT_TOKEN variable is missing in Vercel." && exit 1)
-          vercel --token ${{ env.VERCEL_TOKEN }} env ls preview | grep -q "DISCORD_PUBLIC_KEY" || (echo "DISCORD_PUBLIC_KEY variable is missing in Vercel." && exit 1)
-          vercel --token ${{ env.VERCEL_TOKEN }} env ls preview | grep -q "FRONTEND_URL" || (echo "FRONTEND_URL variable is missing in Vercel." && exit 1)
       - uses: amondnet/vercel-action@v20
         id: discord_deploy
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_DISCORD_PROJECT_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
           working-directory: ./discord
+          vercel-args: -e JWT_SECRET=${{ env.JWT_SECRET }} -e JWT_EXPIRATION_TIME=${{ env.JWT_EXPIRATION_TIME }} -e DISCORD_APP_ID=${{ env.DISCORD_APP_ID }} -e DISCORD_BOT_TOKEN=${{ env.DISCORD_BOT_TOKEN }} -e DISCORD_PUBLIC_KEY=${{ env.DISCORD_PUBLIC_KEY }} -e FRONTEND_URL=${{ env.FRONTEND_URL }}
 
   # TODO prod flag
   # TODO prod domain

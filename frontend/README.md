@@ -55,7 +55,7 @@ The following secrets need to be defined in the GitHub repo in order for continu
 - `VERCEL_ORG_ID`: The Vercel org ID
 - `VERCEL_PROJECT_ID`: The Vercel project ID for the backend
 - `VERCEL_TOKEN`:
-- `INFURA_KEY`:
+- `INFURA_PROJECT_ID`:
 
 ### Future Improvements
 

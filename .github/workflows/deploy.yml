@@ -19,12 +19,20 @@ jobs:
       VERCEL_PROJECT_ID: ${{ secrets.VERCEL_BACKEND_PROJECT_ID }}
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
       DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
+      DISCORD_SERVER_ID: ${{ secrets.DISCORD_SERVER_ID }}
+      DISCORD_ROLE_ID: ${{ secrets.DISCORD_ROLE_ID }}
+      HASURA_ENDPOINT: ${{ secrets.HASURA_ENDPOINT }}
+      HASURA_ADMIN_SECRET: ${{ secrets.HASURA_ADMIN_SECRET }}
+      MORALIS_API_KEY: ${{ secrets.MORALIS_API_KEY }}
+      ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
+      COVALENTHQ_API_KEY: ${{ secrets.COVALENTHQ_API_KEY }}
+      ALCHEMY_MAINNET_API_KEY: ${{ secrets.ALCHEMY_MAINNET_API_KEY }}
+      ALCHEMY_RINKEBY_API_KEY: ${{ secrets.ALCHEMY_RINKEBY_API_KEY }}
     steps:
       - name: Check Variables
         uses: 0xJem/secret-gate-action@v1.1.1
         with:
-          inputsToCheck: VERCEL_TOKEN,GITHUB_TOKEN,VERCEL_ORG_ID,VERCEL_PROJECT_ID,JWT_SECRET,DISCORD_BOT_TOKEN
-          # ,DISCORD_SERVER_ID,DISCORD_ROLE_ID,HASURA_ENDPOINT,HASURA_ADMIN_SECRET,ALCHEMY_MAINNET_API_KEY,ALCHEMY_RINKEBY_API_KEY,COVALENTHQ_API_KEY,ETHERSCAN_API_KEY,MORALIS_API_KEY
+          inputsToCheck: VERCEL_TOKEN,GITHUB_TOKEN,VERCEL_ORG_ID,VERCEL_PROJECT_ID,JWT_SECRET,DISCORD_BOT_TOKEN,DISCORD_SERVER_ID,DISCORD_ROLE_ID,HASURA_ENDPOINT,HASURA_ADMIN_SECRET,MORALIS_API_KEY,ETHERSCAN_API_KEY,COVALENTHQ_API_KEY,ALCHEMY_MAINNET_API_KEY,ALCHEMY_RINKEBY_API_KEY
           failOnMissing: true
       - uses: actions/checkout@v2
       - name: Setup node
@@ -42,7 +50,7 @@ jobs:
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
           working-directory: ./backend
-          vercel-args: --env JWT_SECRET=${{ env.JWT_SECRET }} --env DISCORD_BOT_TOKEN=${{ env.DISCORD_BOT_TOKEN }}
+          vercel-args: --env JWT_SECRET=${{ env.JWT_SECRET }} --env DISCORD_BOT_TOKEN=${{ env.DISCORD_BOT_TOKEN }} --env DISCORD_SERVER_ID=${{ env.DISCORD_SERVER_ID }} --env DISCORD_ROLE_ID=${{ env.DISCORD_ROLE_ID }} --env HASURA_ENDPOINT=${{ env.HASURA_ENDPOINT }} --env HASURA_ADMIN_SECRET=${{ env.HASURA_ADMIN_SECRET }} --env MORALIS_API_KEY=${{ env.MORALIS_API_KEY }} --env ETHERSCAN_API_KEY=${{ env.ETHERSCAN_API_KEY }} --env COVALENTHQ_API_KEY=${{ env.COVALENTHQ_API_KEY }} --env ALCHEMY_MAINNET_API_KEY=${{ env.ALCHEMY_MAINNET_API_KEY }} --env ALCHEMY_RINKEBY_API_KEY=${{ env.ALCHEMY_RINKEBY_API_KEY }}
   frontend:
     runs-on: ubuntu-latest
     outputs:
@@ -53,14 +61,13 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
       VERCEL_PROJECT_ID: ${{ secrets.VERCEL_FRONTEND_PROJECT_ID }}
+      INFURA_PROJECT_ID: ${{ secrets.INFURA_PROJECT_ID }}
       BACKEND_URL: ${{ needs.backend.outputs.preview-url }}
-      # INFURA_KEY: ${{ secrets.INFURA_KEY }}
     steps:
       - name: Check Variables
         uses: 0xJem/secret-gate-action@v1.1.1
         with:
-          inputsToCheck: VERCEL_TOKEN,GITHUB_TOKEN,VERCEL_ORG_ID,VERCEL_PROJECT_ID,BACKEND_URL
-          # ,NEXT_PUBLIC_INFURA_ID
+          inputsToCheck: VERCEL_TOKEN,GITHUB_TOKEN,VERCEL_ORG_ID,VERCEL_PROJECT_ID,INFURA_PROJECT_ID,BACKEND_URL
           failOnMissing: true
       - uses: actions/checkout@v2
       - name: Setup node
@@ -76,8 +83,7 @@ jobs:
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
           working-directory: ./frontend
           # Vercel/Next.js will replace the URL at build-time, not run-time
-          vercel-args: --build-env NEXT_PUBLIC_BACKEND_API_URL=${{ env.BACKEND_URL }}
-          # --build-env NEXT_PUBLIC_INFURA_ID=${{ env.INFURA_KEY }}
+          vercel-args: --build-env NEXT_PUBLIC_BACKEND_API_URL=${{ env.BACKEND_URL }} --build-env NEXT_PUBLIC_INFURA_ID=${{ env.INFURA_PROJECT_ID }}
   discord:
     runs-on: ubuntu-latest
     needs: frontend
@@ -120,4 +126,3 @@ jobs:
   # TODO prod flag
   # TODO prod domain
   # TODO run tests
-  # TODO add remaining secrets

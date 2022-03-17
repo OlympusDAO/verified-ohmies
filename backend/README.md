@@ -112,15 +112,17 @@ Vercel:
 
 The following environment variables need to be present in GitHub Actions, and will be passed to Vercel.
 
-- `DISCORD_BOT_TOKEN`:
 - `JWT_SECRET`: the JWT secret shared between the backend and discord. See [above](#JWT)
+- `DISCORD_BOT_TOKEN`:
+- `DISCORD_SERVER_ID`: Right-click your server on Discord and select Copy ID to get this
+- `DISCORD_ROLE_ID`: Right-click your server on Discord -> Server Settings -> Roles -> "..."
+- `HASURA_ENDPOINT`:
+- `HASURA_ADMIN_SECRET`:
 - `MORALIS_API_KEY`:
 - `ETHERSCAN_API_KEY`:
 - `COVALENTHQ_API_KEY`:
 - `ALCHEMY_MAINNET_API_KEY`:
 - `ALCHEMY_RINKEBY_API_KEY`:
-- `HASURA_ENDPOINT`:
-- `HASURA_ADMIN_SECRET`:
 
 ### Future Improvements
 

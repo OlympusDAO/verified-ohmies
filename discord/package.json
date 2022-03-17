@@ -10,6 +10,7 @@
     "sync": "yarn run slash-up sync",
     "sync:dev": "yarn run slash-up sync -e development",
     "build": "mkdir -p public && touch public/nothing.txt && tsc",
+    "deploy:preview": "source .env && yarn run vercel --env JWT_SECRET=\"$JWT_SECRET\" --env JWT_EXPIRATION_TIME=\"$JWT_EXPIRATION_TIME\" --env DISCORD_APP_ID=\"$DISCORD_APP_ID\" --env DISCORD_BOT_TOKEN=\"$DISCORD_BOT_TOKEN\" --env DISCORD_PUBLIC_KEY=\"$DISCORD_PUBLIC_KEY\" --env FRONTEND_URL=\"$FRONTEND_URL\"",
     "lint": "npx eslint --ext .ts .",
     "lint:fix": "npx eslint --ext .ts . --fix"
   },
@@ -27,6 +28,7 @@
     "eslint-config-prettier": "^7.0.0",
     "eslint-plugin-prettier": "^3.3.0",
     "prettier": "^2.2.1",
-    "slash-up": "^1.0.11"
+    "slash-up": "^1.0.11",
+    "vercel": "^24.0.0"
   }
 }

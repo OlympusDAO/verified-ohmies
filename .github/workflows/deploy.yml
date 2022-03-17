@@ -31,10 +31,9 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version-file: "backend/.nvmrc"
-      - name: Install dependencies
-        run: cd backend && yarn install --frozen-lockfile
+      # We build the source so that typechain is compiled. The Vercel deployment fails if this compilation is done on their servers.
       - name: Build
-        run: cd backend && yarn run build
+        run: cd backend && yarn install --frozen-lockfile && yarn run build
       - uses: amondnet/vercel-action@v20
         id: backend_deploy
         with:

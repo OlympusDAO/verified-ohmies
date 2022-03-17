@@ -31,8 +31,10 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version-file: "backend/.nvmrc"
+      - name: Install dependencies
+        run: cd backend && yarn install --frozen-lockfile
       - name: Build
-        run: yarn run build
+        run: cd backend && yarn run build
       - uses: amondnet/vercel-action@v20
         id: backend_deploy
         with:

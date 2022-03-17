@@ -8,6 +8,7 @@
   },
   "scripts": {
     "build": "yarn typechain:build && yarn run tsc",
+    "deploy:preview": "source .env && yarn run vercel --env MORALIS_API_KEY=\"$MORALIS_API_KEY\" --env JWT_SECRET=\"$JWT_SECRET\" --env DISCORD_BOT_TOKEN=\"$DISCORD_BOT_TOKEN\" --env DISCORD_SERVER_ID=\"$DISCORD_SERVER_ID\"",
     "lint": "npx eslint --ext .ts .",
     "lint:fix": "npx eslint --ext .ts . --fix",
     "typechain:build": "yarn run typechain --target ethers-v5 --out-dir lib/typechain abi/*.json abi/**/*.json"

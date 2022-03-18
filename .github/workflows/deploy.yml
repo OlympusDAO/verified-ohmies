@@ -38,7 +38,7 @@ jobs:
         env:
           TEAM_ID: ${{ secrets.VERCEL_TEAM_ID }}
         run: |
-          if [[ -n ${{ env.TEAM_ID }} ]]; then
+          if [[ -n "${{ env.TEAM_ID }}" ]]; then
             echo "Setting Vercel team ID"
             echo "::set-ouput name=scope_flag::--scope ${{ env.TEAM_ID }}"
           else

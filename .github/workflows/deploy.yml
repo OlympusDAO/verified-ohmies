@@ -15,10 +15,13 @@ on:
 # https://vercel.com/blog/monorepos
 
 jobs:
-  branch_check:
+  production_check:
     runs-on: ubuntu-latest
+    outputs:
+      prod_flag: ${{ steps.check.outputs.prod_flag }}
     steps:
       - name: Set production flags
+        id: check
         # github.ref_name is the branch/tag name that triggered the workflow run
         # therefore, this will only run and trigger a production build on push
         # to the master branch, which is the desired outcome
@@ -26,13 +29,13 @@ jobs:
         run: |
           if [[ ${{ github.ref_name == 'vercel-deployment' }} ]]; then
             echo "This is a production build"
-            echo "PROD_FLAG=--prod" >> $GITHUB_ENV
+            echo "::set-output name=prod_flag::--prod"
           else
-            echo "PROD_FLAG=" >> $GITHUB_ENV
+            echo "::set-output name=prod_flag::"
           fi
   backend:
     runs-on: ubuntu-latest
-    needs: branch_check
+    needs: production_check
     outputs:
       preview-url: ${{ steps.backend_deploy.outputs.preview-url }}
     env:
@@ -50,6 +53,7 @@ jobs:
       COVALENTHQ_API_KEY: ${{ secrets.COVALENTHQ_API_KEY }}
       ALCHEMY_MAINNET_API_KEY: ${{ secrets.ALCHEMY_MAINNET_API_KEY }}
       ALCHEMY_RINKEBY_API_KEY: ${{ secrets.ALCHEMY_RINKEBY_API_KEY }}
+      PROD_FLAG: ${{ needs.production_check.outputs.prod_flag }}
     steps:
       - name: Check Variables
         uses: 0xJem/secret-gate-action@v1.1.1
@@ -78,7 +82,9 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       preview-url: ${{ steps.frontend_deploy.outputs.preview-url }}
-    needs: backend
+    needs:
+      - backend
+      - production_check
     env:
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -86,6 +92,7 @@ jobs:
       VERCEL_PROJECT_ID: ${{ secrets.VERCEL_FRONTEND_PROJECT_ID }}
       INFURA_PROJECT_ID: ${{ secrets.INFURA_PROJECT_ID }}
       BACKEND_URL: ${{ needs.backend.outputs.preview-url }}
+      PROD_FLAG: ${{ needs.production_check.outputs.prod_flag }}
     steps:
       - name: Check Variables
         uses: 0xJem/secret-gate-action@v1.1.1
@@ -109,7 +116,9 @@ jobs:
           vercel-args: --build-env NEXT_PUBLIC_BACKEND_API_URL=${{ env.BACKEND_URL }} --build-env NEXT_PUBLIC_INFURA_ID=${{ env.INFURA_PROJECT_ID }} ${{ env.PROD_FLAG }}
   discord:
     runs-on: ubuntu-latest
-    needs: frontend
+    needs:
+      - frontend
+      - production_check
     env:
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
       JWT_EXPIRATION_TIME: ${{ secrets.JWT_EXPIRATION_TIME }}
@@ -119,6 +128,7 @@ jobs:
       VERCEL_PROJECT_ID: ${{ secrets.VERCEL_DISCORD_PROJECT_ID }}
       VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
       FRONTEND_URL: ${{ needs.frontend.outputs.preview-url }}
+      PROD_FLAG: ${{ needs.production_check.outputs.prod_flag }}
     steps:
       - name: Check Variables
         uses: 0xJem/secret-gate-action@v1.1.1

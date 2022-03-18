@@ -1,15 +1,35 @@
 name: Deploy to Vercel
 
 on:
+  # Build when there is a PR into main or develop
   pull_request:
     branches: [main, develop]
+  # Build when pushing to main or develop (e.g. when the PR is closed)
+  push:
+    branches:
+      - "main"
+      - "develop"
 
 # Vercel requires one project for each directory in a monorepo:
 # https://vercel.com/blog/monorepos
 
 jobs:
+  branch_check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set production flags
+        # github.ref_name is the branch/tag name that triggered the workflow run
+        # therefore, this will only run and trigger a production build on push
+        # to the master branch, which is the desired outcome
+        run: |
+          if [[ ${{ github.ref_name == 'master' ]]; then
+            echo "PROD_FLAG=--prod" >> "$GITHUB_ENV"
+          else
+            echo "PROD_FLAG=" >> "$GITHUB_ENV"
+          fi
   backend:
     runs-on: ubuntu-latest
+    needs: branch_check
     outputs:
       preview-url: ${{ steps.backend_deploy.outputs.preview-url }}
     env:

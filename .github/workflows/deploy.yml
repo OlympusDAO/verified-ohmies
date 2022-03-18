@@ -119,7 +119,7 @@ jobs:
         # It can take some time after deployment for the domains to be ready, so we pause before linking the production domain
         # TODO replace with final domain
         run: |
-          sleep 60
+          sleep 90
           vercel --token ${{ env.VERCEL_TOKEN }} alias set ${{ steps.frontend_deploy.outputs.preview-url }} verified-ohmies.vercel.app
   discord:
     runs-on: ubuntu-latest

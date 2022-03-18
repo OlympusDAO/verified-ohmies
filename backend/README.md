@@ -103,14 +103,9 @@ vercel --prod
 
 The following secrets need to be defined in the GitHub repo in order for continuous deployment to be successful:
 
-Vercel:
-
 - `VERCEL_ORG_ID`: The Vercel org ID
 - `VERCEL_PROJECT_ID`: The Vercel project ID for the backend
 - `VERCEL_TOKEN`:
-
-The following environment variables need to be present in GitHub Actions, and will be passed to Vercel.
-
 - `JWT_SECRET`: the JWT secret shared between the backend and discord. See [above](#JWT)
 - `DISCORD_BOT_TOKEN`:
 - `DISCORD_SERVER_ID`: Right-click your server on Discord and select Copy ID to get this
@@ -121,6 +116,16 @@ The following environment variables need to be present in GitHub Actions, and wi
 - `COVALENTHQ_API_KEY`:
 - `ALCHEMY_MAINNET_API_KEY`:
 - `ALCHEMY_RINKEBY_API_KEY`:
+
+Certain variables will have different values in a production environment:
+
+- `DISCORD_BOT_TOKEN`, `DISCORD_SERVER_ID` and `DISCORD_ROLE_ID`: the values in a production environment will be different
+- `HASURA_ENDPOINT` and `HASURA_ADMIN_SECRET`: the Hasura instance is likely to be different
+
+To set variables for the production environment:
+
+1. Create the production environment and restrict to the `main` branch: <https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment#environment-secrets>
+2. On the environments screen, add entries under the "environment secrets" section.
 
 ### Future Improvements
 

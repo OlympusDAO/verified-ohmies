@@ -31,6 +31,15 @@ The following secrets need to be defined in the GitHub repo in order for continu
 - `DISCORD_BOT_TOKEN`
 - `DISCORD_PUBLIC_KEY`
 
+Certain variables will have different values in a production environment:
+
+- `DISCORD_APP_ID`, `DISCORD_BOT_TOKEN` and `DISCORD_PUBLIC_KEY`: the values in a production environment will be different
+
+To set variables for the production environment:
+
+1. Create the production environment and restrict to the `main` branch: <https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment#environment-secrets>
+2. On the environments screen, add entries under the "environment secrets" section.
+
 ### Latest Deployment URL
 
 While each deployment has a unique URL, there is a URL that reflects the **latest** deployment.

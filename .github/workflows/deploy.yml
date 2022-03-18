@@ -9,6 +9,7 @@ on:
     branches:
       - "main"
       - "develop"
+      - "vercel-deployment" # TODO remove
 
 # Vercel requires one project for each directory in a monorepo:
 # https://vercel.com/blog/monorepos
@@ -21,6 +22,7 @@ jobs:
         # github.ref_name is the branch/tag name that triggered the workflow run
         # therefore, this will only run and trigger a production build on push
         # to the master branch, which is the desired outcome
+        # TODO change branch name
         run: |
           echo ${{ github.ref }}
           echo ${{ github.ref_name }}

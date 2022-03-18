@@ -22,7 +22,7 @@ jobs:
         # therefore, this will only run and trigger a production build on push
         # to the master branch, which is the desired outcome
         run: |
-          if [[ ${{ github.ref_name == 'vercel-deployment' ]]; then
+          if [[ ${{ github.ref_name == 'vercel-deployment' }} ]]; then
             echo "PROD_FLAG=--prod" >> "$GITHUB_ENV"
           else
             echo "PROD_FLAG=" >> "$GITHUB_ENV"

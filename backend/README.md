@@ -39,7 +39,6 @@ This back-end infrastructure is composed by two different API endpoints, which c
 - Node version 14
 - An instance of Hasura
 - A Covalent API Key
-- Optional: An Etherscan API Key if you want to test on Rinkeby Testnet
 
 ## Setup
 
@@ -119,7 +118,6 @@ The following environment variables need to be present in GitHub Actions, and wi
 - `HASURA_ENDPOINT`:
 - `HASURA_ADMIN_SECRET`:
 - `MORALIS_API_KEY`: Click on your profile picture (top-right), then "API", then copy the value next to "Web3 API Key"
-- `ETHERSCAN_API_KEY`:
 - `COVALENTHQ_API_KEY`:
 - `ALCHEMY_MAINNET_API_KEY`:
 - `ALCHEMY_RINKEBY_API_KEY`:

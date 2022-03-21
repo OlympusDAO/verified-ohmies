@@ -38,6 +38,7 @@ jobs:
         #   echo "::set-output name=production_push::true"
         #   echo "::set-output name=prod_flag::--prod"
         # else
+        #   echo "This is not a production build"
         #   echo "::set-output name=production_push::false"
         # fi
         # TODO revert
@@ -51,6 +52,7 @@ jobs:
             echo "This is a staging build"
             echo "::set-output name=staging_push::true"
           else
+            echo "This is not a staging build"
             echo "::set-output name=staging_push::false"
           fi
   backend:
@@ -157,10 +159,13 @@ jobs:
         id: determine_url
         run: |
           if [[ ${{ needs.environment_check.outputs.production }} == true ]]; then
+            echo "Frontend URL is verified.olympusdao.finance"
             echo "::set-output name=url::verified.olympusdao.finance"
           elif [[ ${{ needs.environment_check.outputs.staging }} == true ]]; then
+            echo "Frontend URL is verified-staging.olympusdao.finance"
             echo "::set-output name=url::verified-staging.olympusdao.finance"
           else
+            echo "Frontend URL is ${{ steps.frontend_deploy.outputs.preview-url }}"
             echo "::set-output name=url::${{ steps.frontend_deploy.outputs.preview-url }}"
           fi
   discord:

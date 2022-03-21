@@ -220,7 +220,7 @@ jobs:
         # It can take some time after deployment for the domains to be ready, so we pause before linking the domain
         run: |
           if [[ ${{ needs.environment_check.outputs.production }} == true ]]; then
-            sleep 180
+            sleep 120
             vercel --token ${{ env.VERCEL_TOKEN }} ${{ env.SCOPE_FLAG }} alias set ${{ steps.discord_deploy.outputs.preview-url }} verified-ohmies-discord.vercel.app
           fi
       - name: Staging Domain Alias
@@ -228,7 +228,7 @@ jobs:
         # It can take some time after deployment for the domains to be ready, so we pause before linking the domain
         run: |
           if [[ ${{ needs.environment_check.outputs.staging }} == true ]]; then
-            sleep 180
+            sleep 120
             vercel --token ${{ env.VERCEL_TOKEN }} ${{ env.SCOPE_FLAG }} alias set ${{ steps.discord_deploy.outputs.preview-url }} verified-ohmies-discord-staging.vercel.app
           fi
 

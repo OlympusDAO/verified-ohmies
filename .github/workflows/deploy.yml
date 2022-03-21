@@ -138,7 +138,7 @@ jobs:
           vercel --token ${{ env.VERCEL_TOKEN }} ${{ env.SCOPE_FLAG }} alias set ${{ steps.frontend_deploy.outputs.preview-url }} verified.olympusdao.finance
       # If doing a staging (develop branch) build, we also link the domain name
       - name: Staging Domain Alias
-        if: ${{ github.ref_name }} == "staging"
+        if: github.ref_name == "develop"
         # It can take some time after deployment for the domains to be ready, so we pause before linking the domain
         run: |
           sleep 120
@@ -148,7 +148,7 @@ jobs:
         run: |
           if [[ ${{ env.PROD_FLAG }} == "--prod" ]]; then
             echo "::set-output name=url::verified.olympusdao.finance"
-          elif [[ ${{ github.ref_name }} == "staging" ]]; then
+          elif [[ ${{ github.ref_name }} == "develop" ]]; then
             echo "::set-output name=url::verified-staging.olympusdao.finance"
           else
             echo "::set-output name=url::${{ steps.frontend_deploy.outputs.preview-url }}"
@@ -206,7 +206,7 @@ jobs:
           vercel --token ${{ env.VERCEL_TOKEN }} ${{ env.SCOPE_FLAG }} alias set ${{ steps.discord_deploy.outputs.preview-url }} verified-ohmies-discord.vercel.app
       # If doing a staging (develop branch) build, we also link the domain name
       - name: Staging Domain Alias
-        if: ${{ github.ref_name }} == "staging"
+        if: ${{ github.ref_name }} == "develop"
         # It can take some time after deployment for the domains to be ready, so we pause before linking the domain
         run: |
           sleep 120

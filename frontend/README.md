@@ -67,3 +67,13 @@ The following secrets need to be defined in the GitHub repo in order for continu
 - Add landing page for returning users which confirms that they're already authenticated. Also add the possibility to remove authentication and remove their data from our servers.
 - Improve front-end transitions when switching to a different address/chain on Metamask. Currently a full page refresh is triggered on change, which makes the button "Connect Wallet" show up.
 - Instead of having all the wallet state & logic in `pages/index.tsx`, create a context wrapper for that.
+
+### Deployment URL
+
+While each deployment has a unique URL, there is a URL that reflects the **latest** deployment.
+
+The following URLs are static:
+
+- main branch (production): `https://verified.olympusdao.finance`
+- staging branch: `https://verified-staging.olympusdao.finance`
+- all others: visit the page of a deployment. Under the `domains` section, hover over the `+1` button and copy the URL that appears.

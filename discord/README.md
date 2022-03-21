@@ -40,20 +40,24 @@ To set variables for the production environment:
 1. Create the production environment and restrict to the `main` branch: <https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment#environment-secrets>
 2. On the environments screen, add entries under the "environment secrets" section.
 
-### Latest Deployment URL
+### Deployment URL
 
 While each deployment has a unique URL, there is a URL that reflects the **latest** deployment.
 
-To access this, visit the page of a deployment. Under the `domains` section, hover over the `+1` button and copy the URL that appears. It is generally in the format of `<project name>-git-<branch name>-<user name>.vercel.app`.
+The following URLs are static:
 
-### Set Discord Interactions URL
+- main branch (production): `https://verified-ohmies-discord.vercel.app`
+- staging branch: `https://verified-ohmies-discord-staging.vercel.app`
+- all others: visit the page of a deployment. Under the `domains` section, hover over the `+1` button and copy the URL that appears.
+
+### Set Interactions URL in Discord
 
 After deployment, the endpoint URL needs to be manually added to the Discord application created earlier. To set this:
 
 1. Visit the applications in the developer portal: <https://discord.com/developers/applications>
 2. Select the app created
 3. Select "General Information" in the sidebar
-4. Enter the domain in the "Interactions Endpoint URL" field, in the format: `https://<deployment>.vercel.app/api/command-interactions`
+4. Enter the domain in the "Interactions Endpoint URL" field, in the format: `https://<domain>/api/command-interactions`
 5. Click "Save Changes".
 
 If Discord was able to successfuly ping our server you'll get a message saying "All your edits have been carefully recorded" at the top of the screen.

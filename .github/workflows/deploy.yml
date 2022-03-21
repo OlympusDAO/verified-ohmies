@@ -125,6 +125,10 @@ jobs:
           working-directory: ./frontend
           # Vercel/Next.js will replace the URL at build-time, not run-time
           vercel-args: --build-env NEXT_PUBLIC_BACKEND_API_URL=${{ env.BACKEND_URL }} --build-env NEXT_PUBLIC_INFURA_ID=${{ env.INFURA_PROJECT_ID }} ${{ env.PROD_FLAG }} ${{ env.SCOPE_FLAG }}
+      - run: |
+          echo ${{ github.ref_name }}
+          echo ${{ github.event_name }}
+          echo ${{ github.base_ref }}
       # If doing a production build, we also link the domain name
       - name: Production Domain Alias
         if: ${{ env.PROD_FLAG }} == "--prod"
@@ -164,7 +168,6 @@ jobs:
       VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
       FRONTEND_URL: ${{ needs.frontend.outputs.preview-url }}
       PROD_FLAG: ${{ needs.environment_check.outputs.prod_flag }}
-      SCOPE_FLAG: ${{ needs.environment_check.outputs.scope_flag }}
     steps:
       - name: Check Variables
         uses: 0xJem/secret-gate-action@v1.1.1

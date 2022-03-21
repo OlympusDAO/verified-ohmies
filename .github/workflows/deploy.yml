@@ -33,28 +33,27 @@ jobs:
         # github.ref_name is the branch/tag name that triggered the workflow run
         # therefore, this will only run and trigger a production build on push
         # to the master branch, which is the desired outcome
-        # if [[ ${{ github.ref_name }} == 'main' ]]; then
-        #   echo "This is a production build"
-        #   echo "::set-output name=production_push::true"
-        #   echo "::set-output name=prod_flag::--prod"
+        run: |
+          if [[ ${{ github.ref_name }} == 'main' ]]; then
+            echo "This is a production build"
+            echo "::set-output name=production_push::true"
+            echo "::set-output name=prod_flag::--prod"
+          else
+            echo "This is not a production build"
+            echo "::set-output name=production_push::false"
+          fi
+      - name: Set staging flags
+        id: staging
+        # if [[ ${{ github.ref_name }} == 'develop' ]]; then
+        #   echo "This is a staging build"
+        #   echo "::set-output name=staging_push::true"
         # else
-        #   echo "This is not a production build"
-        #   echo "::set-output name=production_push::false"
+        #   echo "This is not a staging build"
+        #   echo "::set-output name=staging_push::false"
         # fi
         # TODO revert
         run: |
-          echo "::set-output name=production_push::true"
-          echo "::set-output name=prod_flag::--prod"
-      - name: Set staging flags
-        id: staging
-        run: |
-          if [[ ${{ github.ref_name }} == 'develop' ]]; then
-            echo "This is a staging build"
-            echo "::set-output name=staging_push::true"
-          else
-            echo "This is not a staging build"
-            echo "::set-output name=staging_push::false"
-          fi
+          echo "::set-output name=staging_push::true"
   backend:
     runs-on: ubuntu-latest
     needs: environment_check

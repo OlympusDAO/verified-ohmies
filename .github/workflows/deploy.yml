@@ -44,16 +44,14 @@ jobs:
           fi
       - name: Set staging flags
         id: staging
-        # if [[ ${{ github.ref_name }} == 'develop' ]]; then
-        #   echo "This is a staging build"
-        #   echo "::set-output name=staging_push::true"
-        # else
-        #   echo "This is not a staging build"
-        #   echo "::set-output name=staging_push::false"
-        # fi
-        # TODO revert
         run: |
-          echo "::set-output name=staging_push::true"
+          if [[ ${{ github.ref_name }} == 'develop' ]]; then
+            echo "This is a staging build"
+            echo "::set-output name=staging_push::true"
+          else
+            echo "This is not a staging build"
+            echo "::set-output name=staging_push::false"
+          fi
   backend:
     runs-on: ubuntu-latest
     needs: environment_check

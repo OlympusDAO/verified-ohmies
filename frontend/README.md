@@ -77,3 +77,11 @@ The following URLs are static:
 - main branch (production): `https://verified.olympusdao.finance`
 - staging branch: `https://verified-staging.olympusdao.finance`
 - all others: visit the page of a deployment. Under the `domains` section, hover over the `+1` button and copy the URL that appears.
+
+The `olympusdao.finance` domains need to be assigned to the project in order to be used:
+
+1. Access the `Domains` tab on the team dashboard in Vercel
+2. Select `olympusdao.finance` and click on the `Add` button
+3. Select the frontend project in the list
+4. Enter in the domain (e.g. `verified.olympusdao.finance`) and click `Add`
+5. Repeat for `verified-staging.olympusdao.finance`

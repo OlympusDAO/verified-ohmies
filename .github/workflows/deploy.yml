@@ -18,6 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       prod_flag: ${{ steps.production.outputs.prod_flag }}
+      scope_flag: ${{ steps.production.outputs.scope_flag }}
     steps:
       - name: Set production flags
         id: production
@@ -31,6 +32,17 @@ jobs:
             echo "::set-output name=prod_flag::--prod"
           else
             echo "::set-output name=prod_flag::"
+          fi
+      - name: Set team scope
+        id: scope
+        env:
+          TEAM_ID: ${{ secrets.VERCEL_TEAM_ID }}
+        run: |
+          if [[ -n "${{ env.TEAM_ID }}" ]]; then
+            echo "Setting Vercel team ID"
+            echo "::set-ouput name=scope_flag::--scope ${{ env.TEAM_ID }}"
+          else
+            echo "::set-ouput name=scope_flag::"
           fi
   backend:
     runs-on: ubuntu-latest
@@ -53,6 +65,7 @@ jobs:
       ALCHEMY_MAINNET_API_KEY: ${{ secrets.ALCHEMY_MAINNET_API_KEY }}
       ALCHEMY_RINKEBY_API_KEY: ${{ secrets.ALCHEMY_RINKEBY_API_KEY }}
       PROD_FLAG: ${{ needs.environment_check.outputs.prod_flag }}
+      SCOPE_FLAG: ${{ needs.environment_check.outputs.scope_flag }}
     steps:
       - name: Check Variables
         uses: 0xJem/secret-gate-action@v1.1.1
@@ -75,7 +88,7 @@ jobs:
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
           working-directory: ./backend
-          vercel-args: --env JWT_SECRET=${{ env.JWT_SECRET }} --env DISCORD_BOT_TOKEN=${{ env.DISCORD_BOT_TOKEN }} --env DISCORD_SERVER_ID=${{ env.DISCORD_SERVER_ID }} --env DISCORD_ROLE_ID=${{ env.DISCORD_ROLE_ID }} --env HASURA_ENDPOINT=${{ env.HASURA_ENDPOINT }} --env HASURA_ADMIN_SECRET=${{ env.HASURA_ADMIN_SECRET }} --env MORALIS_API_KEY=${{ env.MORALIS_API_KEY }} --env COVALENTHQ_API_KEY=${{ env.COVALENTHQ_API_KEY }} --env ALCHEMY_MAINNET_API_KEY=${{ env.ALCHEMY_MAINNET_API_KEY }} --env ALCHEMY_RINKEBY_API_KEY=${{ env.ALCHEMY_RINKEBY_API_KEY }} ${{ env.PROD_FLAG }}
+          vercel-args: --env JWT_SECRET=${{ env.JWT_SECRET }} --env DISCORD_BOT_TOKEN=${{ env.DISCORD_BOT_TOKEN }} --env DISCORD_SERVER_ID=${{ env.DISCORD_SERVER_ID }} --env DISCORD_ROLE_ID=${{ env.DISCORD_ROLE_ID }} --env HASURA_ENDPOINT=${{ env.HASURA_ENDPOINT }} --env HASURA_ADMIN_SECRET=${{ env.HASURA_ADMIN_SECRET }} --env MORALIS_API_KEY=${{ env.MORALIS_API_KEY }} --env COVALENTHQ_API_KEY=${{ env.COVALENTHQ_API_KEY }} --env ALCHEMY_MAINNET_API_KEY=${{ env.ALCHEMY_MAINNET_API_KEY }} --env ALCHEMY_RINKEBY_API_KEY=${{ env.ALCHEMY_RINKEBY_API_KEY }} ${{ env.PROD_FLAG }} ${{ env.SCOPE_FLAG }}
   frontend:
     runs-on: ubuntu-latest
     outputs:
@@ -91,6 +104,7 @@ jobs:
       INFURA_PROJECT_ID: ${{ secrets.INFURA_PROJECT_ID }}
       BACKEND_URL: ${{ needs.backend.outputs.preview-url }}
       PROD_FLAG: ${{ needs.environment_check.outputs.prod_flag }}
+      SCOPE_FLAG: ${{ needs.environment_check.outputs.scope_flag }}
     steps:
       - name: Check Variables
         uses: 0xJem/secret-gate-action@v1.1.1
@@ -111,21 +125,21 @@ jobs:
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
           working-directory: ./frontend
           # Vercel/Next.js will replace the URL at build-time, not run-time
-          vercel-args: --build-env NEXT_PUBLIC_BACKEND_API_URL=${{ env.BACKEND_URL }} --build-env NEXT_PUBLIC_INFURA_ID=${{ env.INFURA_PROJECT_ID }} ${{ env.PROD_FLAG }}
+          vercel-args: --build-env NEXT_PUBLIC_BACKEND_API_URL=${{ env.BACKEND_URL }} --build-env NEXT_PUBLIC_INFURA_ID=${{ env.INFURA_PROJECT_ID }} ${{ env.PROD_FLAG }} ${{ env.SCOPE_FLAG }}
       # If doing a production build, we also link the domain name
       - name: Production Domain Alias
         if: ${{ env.PROD_FLAG }} == "--prod"
         # It can take some time after deployment for the domains to be ready, so we pause before linking the domain
         run: |
           sleep 120
-          vercel --token ${{ env.VERCEL_TOKEN }} alias set ${{ steps.frontend_deploy.outputs.preview-url }} verified.olympusdao.finance
+          vercel --token ${{ env.VERCEL_TOKEN }} ${{ env.SCOPE_FLAG }} alias set ${{ steps.frontend_deploy.outputs.preview-url }} verified.olympusdao.finance
       # If doing a staging (develop branch) build, we also link the domain name
       - name: Staging Domain Alias
         if: ${{ github.ref_name }} == "staging"
         # It can take some time after deployment for the domains to be ready, so we pause before linking the domain
         run: |
           sleep 120
-          vercel --token ${{ env.VERCEL_TOKEN }} alias set ${{ steps.frontend_deploy.outputs.preview-url }} verified-staging.olympusdao.finance
+          vercel --token ${{ env.VERCEL_TOKEN }} ${{ env.SCOPE_FLAG }} alias set ${{ steps.frontend_deploy.outputs.preview-url }} verified-staging.olympusdao.finance
       - name: Determine output URL
         id: determine_url
         run: |
@@ -151,6 +165,7 @@ jobs:
       VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
       FRONTEND_URL: ${{ needs.frontend.outputs.preview-url }}
       PROD_FLAG: ${{ needs.environment_check.outputs.prod_flag }}
+      SCOPE_FLAG: ${{ needs.environment_check.outputs.scope_flag }}
     steps:
       - name: Check Variables
         uses: 0xJem/secret-gate-action@v1.1.1
@@ -176,20 +191,20 @@ jobs:
           vercel-org-id: ${{ env.VERCEL_ORG_ID }}
           vercel-project-id: ${{ env.VERCEL_PROJECT_ID }}
           working-directory: ./discord
-          vercel-args: --env JWT_SECRET=${{ env.JWT_SECRET }} --env JWT_EXPIRATION_TIME=${{ env.JWT_EXPIRATION_TIME }} --env DISCORD_APP_ID=${{ env.DISCORD_APP_ID }} --env DISCORD_BOT_TOKEN=${{ env.DISCORD_BOT_TOKEN }} --env DISCORD_PUBLIC_KEY=${{ env.DISCORD_PUBLIC_KEY }} --env FRONTEND_URL=${{ env.FRONTEND_URL }} ${{ env.PROD_FLAG }}
+          vercel-args: --env JWT_SECRET=${{ env.JWT_SECRET }} --env JWT_EXPIRATION_TIME=${{ env.JWT_EXPIRATION_TIME }} --env DISCORD_APP_ID=${{ env.DISCORD_APP_ID }} --env DISCORD_BOT_TOKEN=${{ env.DISCORD_BOT_TOKEN }} --env DISCORD_PUBLIC_KEY=${{ env.DISCORD_PUBLIC_KEY }} --env FRONTEND_URL=${{ env.FRONTEND_URL }} ${{ env.PROD_FLAG }} ${{ env.SCOPE_FLAG }}
       # If doing a production build, we also set a consistent domain name
       - name: Production Domain Alias
         if: ${{ env.PROD_FLAG }} == "--prod"
         # It can take some time after deployment for the domains to be ready, so we pause before linking the domain
         run: |
           sleep 120
-          vercel --token ${{ env.VERCEL_TOKEN }} alias set ${{ steps.discord_deploy.outputs.preview-url }} verified-ohmies-discord.vercel.app
+          vercel --token ${{ env.VERCEL_TOKEN }} ${{ env.SCOPE_FLAG }} alias set ${{ steps.discord_deploy.outputs.preview-url }} verified-ohmies-discord.vercel.app
       # If doing a staging (develop branch) build, we also link the domain name
       - name: Staging Domain Alias
         if: ${{ github.ref_name }} == "staging"
         # It can take some time after deployment for the domains to be ready, so we pause before linking the domain
         run: |
           sleep 120
-          vercel --token ${{ env.VERCEL_TOKEN }} alias set ${{ steps.discord_deploy.outputs.preview-url }} verified-ohmies-discord-staging.vercel.app
+          vercel --token ${{ env.VERCEL_TOKEN }} ${{ env.SCOPE_FLAG }} alias set ${{ steps.discord_deploy.outputs.preview-url }} verified-ohmies-discord-staging.vercel.app
 
   # TODO run tests

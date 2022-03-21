@@ -18,6 +18,8 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       prod_flag: ${{ steps.production.outputs.prod_flag }}
+      production: ${{ steps.production.outputs.production_push }}
+      staging: ${{ steps.staging.outputs.staging_push }}
     env:
       VERCEL_TEAM_ID: ${{ secrets.VERCEL_TEAM_ID }}
     steps:
@@ -31,13 +33,25 @@ jobs:
         # github.ref_name is the branch/tag name that triggered the workflow run
         # therefore, this will only run and trigger a production build on push
         # to the master branch, which is the desired outcome
-        # TODO change branch name
         run: |
-          if [[ ${{ github.ref_name == 'vercel-deployment' }} ]]; then
-            echo "This is a production build"
-            echo "::set-output name=prod_flag::--prod"
+          # if [[ ${{ github.ref_name == 'main' }} ]]; then
+          #   echo "This is a production build"
+          #   echo "::set-output name=production_push::true"
+          #   echo "::set-output name=prod_flag::--prod"
+          # else
+          #   echo "::set-output name=production_push::false"
+          # fi
+          # TODO revert
+          echo "::set-output name=production_push::true"
+          echo "::set-output name=prod_flag::--prod"
+      - name: Set staging flags
+        id: staging
+        run: |
+          if [[ ${{ github.ref_name == 'develop' }} ]]; then
+            echo "This is a staging build"
+            echo "::set-output name=staging_push::true"
           else
-            echo "::set-output name=prod_flag::"
+            echo "::set-output name=staging_push::false"
           fi
   backend:
     runs-on: ubuntu-latest
@@ -131,14 +145,14 @@ jobs:
           echo ${{ github.base_ref }}
       # If doing a production build, we also link the domain name
       - name: Production Domain Alias
-        if: env.PROD_FLAG == "--prod"
+        if: ${{ needs.environment_check.outputs.production == "true" }}
         # It can take some time after deployment for the domains to be ready, so we pause before linking the domain
         run: |
           sleep 120
           vercel --token ${{ env.VERCEL_TOKEN }} ${{ env.SCOPE_FLAG }} alias set ${{ steps.frontend_deploy.outputs.preview-url }} verified.olympusdao.finance
       # If doing a staging (develop branch) build, we also link the domain name
       - name: Staging Domain Alias
-        if: github.ref_name == "develop"
+        if: ${{ needs.environment_check.outputs.staging == "true" }}
         # It can take some time after deployment for the domains to be ready, so we pause before linking the domain
         run: |
           sleep 120
@@ -146,9 +160,9 @@ jobs:
       - name: Determine output URL
         id: determine_url
         run: |
-          if [[ ${{ env.PROD_FLAG }} == "--prod" ]]; then
+          if [[ ${{ needs.environment_check.outputs.production == "true" }} ]]; then
             echo "::set-output name=url::verified.olympusdao.finance"
-          elif [[ ${{ github.ref_name }} == "develop" ]]; then
+          elif [[ ${{ needs.environment_check.outputs.staging == "true" }} ]]; then
             echo "::set-output name=url::verified-staging.olympusdao.finance"
           else
             echo "::set-output name=url::${{ steps.frontend_deploy.outputs.preview-url }}"
@@ -199,14 +213,14 @@ jobs:
           vercel-args: --env JWT_SECRET=${{ env.JWT_SECRET }} --env JWT_EXPIRATION_TIME=${{ env.JWT_EXPIRATION_TIME }} --env DISCORD_APP_ID=${{ env.DISCORD_APP_ID }} --env DISCORD_BOT_TOKEN=${{ env.DISCORD_BOT_TOKEN }} --env DISCORD_PUBLIC_KEY=${{ env.DISCORD_PUBLIC_KEY }} --env FRONTEND_URL=${{ env.FRONTEND_URL }} ${{ env.PROD_FLAG }} ${{ env.SCOPE_FLAG }}
       # If doing a production build, we also set a consistent domain name
       - name: Production Domain Alias
-        if: env.PROD_FLAG == "--prod"
+        if: ${{ needs.environment_check.outputs.production == "true" }}
         # It can take some time after deployment for the domains to be ready, so we pause before linking the domain
         run: |
           sleep 120
           vercel --token ${{ env.VERCEL_TOKEN }} ${{ env.SCOPE_FLAG }} alias set ${{ steps.discord_deploy.outputs.preview-url }} verified-ohmies-discord.vercel.app
       # If doing a staging (develop branch) build, we also link the domain name
       - name: Staging Domain Alias
-        if: github.ref_name == "develop"
+        if: ${{ needs.environment_check.outputs.staging == "true" }}
         # It can take some time after deployment for the domains to be ready, so we pause before linking the domain
         run: |
           sleep 120

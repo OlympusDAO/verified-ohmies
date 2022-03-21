@@ -169,6 +169,7 @@ jobs:
       - frontend
       - environment_check
     env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
       JWT_EXPIRATION_TIME: ${{ secrets.JWT_EXPIRATION_TIME }}
       DISCORD_APP_ID: ${{ secrets.DISCORD_APP_ID }}
@@ -182,7 +183,7 @@ jobs:
       - name: Check Variables
         uses: 0xJem/secret-gate-action@v1.1.1
         with:
-          inputsToCheck: JWT_SECRET,JWT_EXPIRATION_TIME,DISCORD_APP_ID,DISCORD_BOT_TOKEN,DISCORD_PUBLIC_KEY,VERCEL_PROJECT_ID,VERCEL_ORG_ID,FRONTEND_URL
+          inputsToCheck: JWT_SECRET,JWT_EXPIRATION_TIME,DISCORD_APP_ID,DISCORD_BOT_TOKEN,DISCORD_PUBLIC_KEY,VERCEL_PROJECT_ID,VERCEL_ORG_ID,FRONTEND_URL,VERCEL_TOKEN
           failOnMissing: true
       - name: Set Scope
         run: |

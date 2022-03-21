@@ -45,9 +45,9 @@ jobs:
         run: |
           if [[ -n "${{ env.VERCEL_TEAM_ID }}" ]]; then
             echo "Setting Vercel team ID"
-            echo "::set-ouput name=scope_flag::--scope ${{ env.VERCEL_TEAM_ID }}"
+            echo "::set-output name=scope_flag::--scope ${{ env.VERCEL_TEAM_ID }}"
           else
-            echo "::set-ouput name=scope_flag::"
+            echo "::set-output name=scope_flag::"
           fi
   backend:
     runs-on: ubuntu-latest

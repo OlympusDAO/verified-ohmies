@@ -19,7 +19,14 @@ jobs:
     outputs:
       prod_flag: ${{ steps.production.outputs.prod_flag }}
       scope_flag: ${{ steps.production.outputs.scope_flag }}
+    env:
+      VERCEL_TEAM_ID: ${{ secrets.VERCEL_TEAM_ID }}
     steps:
+      - name: Check Variables
+        uses: 0xJem/secret-gate-action@v1.1.1
+        with:
+          inputsToCheck: VERCEL_TEAM_ID
+          failOnMissing: true
       - name: Set production flags
         id: production
         # github.ref_name is the branch/tag name that triggered the workflow run
@@ -35,12 +42,10 @@ jobs:
           fi
       - name: Set team scope
         id: scope
-        env:
-          TEAM_ID: ${{ secrets.VERCEL_TEAM_ID }}
         run: |
-          if [[ -n "${{ env.TEAM_ID }}" ]]; then
+          if [[ -n "${{ env.VERCEL_TEAM_ID }}" ]]; then
             echo "Setting Vercel team ID"
-            echo "::set-ouput name=scope_flag::--scope ${{ env.TEAM_ID }}"
+            echo "::set-ouput name=scope_flag::--scope ${{ env.VERCEL_TEAM_ID }}"
           else
             echo "::set-ouput name=scope_flag::"
           fi

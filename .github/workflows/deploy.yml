@@ -143,14 +143,14 @@ jobs:
           vercel-args: --build-env NEXT_PUBLIC_BACKEND_API_URL=${{ env.BACKEND_URL }} --build-env NEXT_PUBLIC_INFURA_ID=${{ env.INFURA_PROJECT_ID }} ${{ env.PROD_FLAG }} ${{ env.SCOPE_FLAG }}
       # If doing a production build, we also link the domain name
       - name: Production Domain Alias
-        if: ${{ needs.environment_check.outputs.production }} == true
+        if: needs.environment_check.outputs.production
         # It can take some time after deployment for the domains to be ready, so we pause before linking the domain
         run: |
           sleep 120
           vercel --token ${{ env.VERCEL_TOKEN }} ${{ env.SCOPE_FLAG }} alias set ${{ steps.frontend_deploy.outputs.preview-url }} verified.olympusdao.finance
       # If doing a staging (develop branch) build, we also link the domain name
       - name: Staging Domain Alias
-        if: ${{ needs.environment_check.outputs.staging }} == true
+        if: needs.environment_check.outputs.staging
         # It can take some time after deployment for the domains to be ready, so we pause before linking the domain
         run: |
           sleep 120
@@ -215,14 +215,14 @@ jobs:
           vercel-args: --env JWT_SECRET=${{ env.JWT_SECRET }} --env JWT_EXPIRATION_TIME=${{ env.JWT_EXPIRATION_TIME }} --env DISCORD_APP_ID=${{ env.DISCORD_APP_ID }} --env DISCORD_BOT_TOKEN=${{ env.DISCORD_BOT_TOKEN }} --env DISCORD_PUBLIC_KEY=${{ env.DISCORD_PUBLIC_KEY }} --env FRONTEND_URL=${{ env.FRONTEND_URL }} ${{ env.PROD_FLAG }} ${{ env.SCOPE_FLAG }}
       # If doing a production build, we also set a consistent domain name
       - name: Production Domain Alias
-        if: ${{ needs.environment_check.outputs.production }} == true
+        if: needs.environment_check.outputs.production
         # It can take some time after deployment for the domains to be ready, so we pause before linking the domain
         run: |
           sleep 120
           vercel --token ${{ env.VERCEL_TOKEN }} ${{ env.SCOPE_FLAG }} alias set ${{ steps.discord_deploy.outputs.preview-url }} verified-ohmies-discord.vercel.app
       # If doing a staging (develop branch) build, we also link the domain name
       - name: Staging Domain Alias
-        if: ${{ needs.environment_check.outputs.staging }} == true
+        if: needs.environment_check.outputs.staging
         # It can take some time after deployment for the domains to be ready, so we pause before linking the domain
         run: |
           sleep 120

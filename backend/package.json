@@ -7,10 +7,8 @@
     "node": "14.x"
   },
   "scripts": {
-    "sync": "slash-up sync",
-    "sync:dev": "slash-up sync -e development",
-    "vercel-build": "yarn typechain:build && tsc && yarn sync",
-    "build": "yarn typechain:build && tsc",
+    "build": "yarn typechain:build && yarn run tsc",
+    "deploy:preview": "source .env && yarn run vercel --env JWT_SECRET=\"$JWT_SECRET\" --env DISCORD_BOT_TOKEN=\"$DISCORD_BOT_TOKEN\" --env DISCORD_SERVER_ID=\"$DISCORD_SERVER_ID\" --env DISCORD_ROLE_ID=\"$DISCORD_ROLE_ID\" --env HASURA_ENDPOINT=\"$HASURA_ENDPOINT\" --env HASURA_ADMIN_SECRET=\"$HASURA_ADMIN_SECRET\" --env MORALIS_API_KEY=\"$MORALIS_API_KEY\" --env COVALENTHQ_API_KEY=\"$COVALENTHQ_API_KEY\" --env ALCHEMY_MAINNET_API_KEY=\"$ALCHEMY_MAINNET_API_KEY\" --env ALCHEMY_RINKEBY_API_KEY=\"$ALCHEMY_RINKEBY_API_KEY\"",
     "lint": "npx eslint --ext .ts .",
     "lint:fix": "npx eslint --ext .ts . --fix",
     "typechain:build": "yarn run typechain --target ethers-v5 --out-dir typechain abi/*.json abi/**/*.json"
@@ -19,11 +17,13 @@
     "ethers": "^5.0.17",
     "jsonwebtoken": "^8.5.1",
     "node-fetch": "2.6.7",
-    "slash-create": "^5.2.1",
     "typechain": "^7.0.0",
     "uuidv4": "6.2.7"
   },
   "devDependencies": {
+    "@ethersproject/abi": "^5.0.0",
+    "@ethersproject/bytes": "^5.0.0",
+    "@ethersproject/providers": "^5.0.0",
     "@typechain/ethers-v5": "^9.0.0",
     "@types/jsonwebtoken": "^8.5.6",
     "@types/node": "^16.7.13",
@@ -36,6 +36,7 @@
     "eslint-config-prettier": "^7.0.0",
     "eslint-plugin-prettier": "^3.3.0",
     "prettier": "^2.2.1",
-    "slash-up": "^1.0.11"
+    "typescript": "4.3.4",
+    "vercel": "^24.0.0"
   }
 }

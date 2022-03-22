@@ -1,0 +1,11 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/command-interactions",
+      "destination": "/api/v1/command-interactions"
+    }
+  ],
+  "github": {
+    "enabled": false
+  }
+}

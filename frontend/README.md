@@ -2,13 +2,13 @@
 
 This is the front-end for Verified Ohmies with which the user interacts to do the authentication flow through their browser Wallet.
 
-Contents
-========
- * [How It Works](#how-it-works)
- * [Requirements](#requirements)
- * [Setup](#setup)
- * [Deployment](#deployment)
- * [Future improvements](#future-improvements)
+# Contents
+
+- [How It Works](#how-it-works)
+- [Requirements](#requirements)
+- [Setup](#setup)
+- [Deployment](#deployment)
+- [Future improvements](#future-improvements)
 
 ### How It Works
 
@@ -39,8 +39,8 @@ vercel dev
 > You need to launch `olympus-api/lambda/verified-ohmies/` or deploy it
 
 ##### Vercel
-- Create the same `.env.example` variables on the Vercel project
 
+- Create the same `.env.example` variables on the Vercel project
 
 ### Deployment
 
@@ -48,7 +48,31 @@ vercel dev
 vercel --prod
 ```
 
+## Supported Networks
+
+- Production builds only support Ethereum mainnet, otherwise a user could have tokens on a testnet and feature the role in the Discord server.
+- All other builds support Ethereum mainnet and Ethereum rinkeby testnet.
+
 ### Future Improvements
+
 - Add landing page for returning users which confirms that they're already authenticated. Also add the possibility to remove authentication and remove their data from our servers.
 - Improve front-end transitions when switching to a different address/chain on Metamask. Currently a full page refresh is triggered on change, which makes the button "Connect Wallet" show up.
 - Instead of having all the wallet state & logic in `pages/index.tsx`, create a context wrapper for that.
+
+### Deployment URL
+
+While each deployment has a unique URL, there is a URL that reflects the **latest** deployment.
+
+The following URLs are static:
+
+- main branch (production): `https://verified.olympusdao.finance`
+- staging branch: `https://verified-staging.olympusdao.finance`
+- all others: visit the page of a deployment. Under the `domains` section, hover over the `+1` button and copy the URL that appears.
+
+The `olympusdao.finance` domains need to be assigned to the project in order to be used:
+
+1. Access the `Domains` tab on the team dashboard in Vercel
+2. Select `olympusdao.finance` and click on the `Add` button
+3. Select the frontend project in the list
+4. Enter in the domain (e.g. `verified.olympusdao.finance`) and click `Add`
+5. Repeat for `verified-staging.olympusdao.finance`

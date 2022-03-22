@@ -12,10 +12,13 @@ const JWT_EXPIRED_ERROR = "Your token has expired. Call the verification command
 const JWT_INVALID_ERROR =
   "Something's wrong with your token. Call the verification command on Discord again to get a new one.";
 
-var supportedChainIds;
-const env = process.env.NODE_ENV;
-if (env === "production") supportedChainIds = CHAIN_IDS_PRODUCTION;
-else if (env === "development") supportedChainIds = CHAIN_IDS_DEVELOPMENT;
+var supportedChainIds = CHAIN_IDS_DEVELOPMENT;
+
+const vercelEnv = process.env.VERCEL_ENV;
+if (vercelEnv === "production") {
+  console.log("VERCEL_ENV is production: restricting chain data to mainnet");
+  supportedChainIds = CHAIN_IDS_PRODUCTION;
+}
 
 const auth = async (request: VercelRequest, response: VercelResponse) => {
   if (request.method === "OPTIONS") {
@@ -55,6 +58,7 @@ const auth = async (request: VercelRequest, response: VercelResponse) => {
       else if (error instanceof jwt.JsonWebTokenError) errorMessage = JWT_INVALID_ERROR;
       else errorMessage = error.message;
       console.log(`/api/v1/authentication GET error: ${errorMessage} (discordUserId: ${discordUserId})`);
+      console.log(`Stack trace:\n${error.stack}`);
       response.status(500).send({ error: errorMessage });
     }
   } else if (request.method == "POST") {
@@ -107,6 +111,7 @@ const auth = async (request: VercelRequest, response: VercelResponse) => {
       else if (error instanceof jwt.JsonWebTokenError) errorMessage = JWT_INVALID_ERROR;
       else errorMessage = error.message;
       console.log(`/api/v1/authentication POST error: ${errorMessage} (discordUserId: ${discordUserId})`);
+      console.log(`Stack trace:\n${error.stack}`);
       response.status(500).send({ error: errorMessage });
     }
   }

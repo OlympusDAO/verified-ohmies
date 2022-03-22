@@ -1,0 +1,233 @@
+name: Deploy to Vercel
+
+on:
+  # Build when there is a PR into main or develop
+  pull_request:
+    branches: [main, develop]
+  # Build when pushing to main or develop (e.g. when the PR is closed)
+  push:
+    branches:
+      - "main"
+      - "develop"
+  workflow_dispatch:
+
+# Vercel requires one project for each directory in a monorepo:
+# https://vercel.com/blog/monorepos
+
+jobs:
+  environment_check:
+    runs-on: ubuntu-latest
+    outputs:
+      prod_flag: ${{ steps.production.outputs.prod_flag }}
+      production: ${{ steps.production.outputs.production_push }}
+      staging: ${{ steps.staging.outputs.staging_push }}
+    env:
+      VERCEL_TEAM_ID: ${{ secrets.VERCEL_TEAM_ID }}
+    steps:
+      - name: Check Variables
+        uses: 0xJem/secret-gate-action@v1.1.1
+        with:
+          inputsToCheck: VERCEL_TEAM_ID
+          failOnMissing: true
+      - name: Set production flags
+        id: production
+        # github.ref_name is the branch/tag name that triggered the workflow run
+        # therefore, this will only run and trigger a production build on push
+        # to the master branch, which is the desired outcome
+        run: |
+          if [[ ${{ github.ref_name }} == 'main' ]]; then
+            echo "This is a production build"
+            echo "::set-output name=production_push::true"
+            echo "::set-output name=prod_flag::--prod"
+          else
+            echo "This is not a production build"
+            echo "::set-output name=production_push::false"
+          fi
+      - name: Set staging flags
+        id: staging
+        run: |
+          if [[ ${{ github.ref_name }} == 'develop' ]]; then
+            echo "This is a staging build"
+            echo "::set-output name=staging_push::true"
+          else
+            echo "This is not a staging build"
+            echo "::set-output name=staging_push::false"
+          fi
+  backend:
+    runs-on: ubuntu-latest
+    needs: environment_check
+    outputs:
+      preview-url: ${{ steps.backend_deploy.outputs.preview-url }}
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_BACKEND_PROJECT_ID }}
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
+      DISCORD_SERVER_ID: ${{ secrets.DISCORD_SERVER_ID }}
+      DISCORD_ROLE_ID: ${{ secrets.DISCORD_ROLE_ID }}
+      HASURA_ENDPOINT: ${{ secrets.HASURA_ENDPOINT }}
+      HASURA_ADMIN_SECRET: ${{ secrets.HASURA_ADMIN_SECRET }}
+      MORALIS_API_KEY: ${{ secrets.MORALIS_API_KEY }}
+      COVALENTHQ_API_KEY: ${{ secrets.COVALENTHQ_API_KEY }}
+      ALCHEMY_MAINNET_API_KEY: ${{ secrets.ALCHEMY_MAINNET_API_KEY }}
+      ALCHEMY_RINKEBY_API_KEY: ${{ secrets.ALCHEMY_RINKEBY_API_KEY }}
+      PROD_FLAG: ${{ needs.environment_check.outputs.prod_flag }}
+    steps:
+      - name: Check Variables
+        uses: 0xJem/secret-gate-action@v1.1.1
+        with:
+          inputsToCheck: VERCEL_TOKEN,GITHUB_TOKEN,VERCEL_ORG_ID,VERCEL_PROJECT_ID,JWT_SECRET,DISCORD_BOT_TOKEN,DISCORD_SERVER_ID,DISCORD_ROLE_ID,HASURA_ENDPOINT,HASURA_ADMIN_SECRET,MORALIS_API_KEY,COVALENTHQ_API_KEY,ALCHEMY_MAINNET_API_KEY,ALCHEMY_RINKEBY_API_KEY
+          failOnMissing: true
+      - name: Set Scope
+        run: |
+          echo "SCOPE_FLAG=--scope ${{ secrets.VERCEL_TEAM_ID }}" >> $GITHUB_ENV
+      - uses: actions/checkout@v2
+      - name: Setup node
+        uses: actions/setup-node@v2
+        with:
+          node-version-file: "backend/.nvmrc"
+      # We build the source so that typechain is compiled. The Vercel deployment fails if this compilation is done on their servers.
+      - name: Build
+        run: cd backend && yarn install --frozen-lockfile && yarn run build
+      - uses: amondnet/vercel-action@v20
+        id: backend_deploy
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          working-directory: ./backend
+          vercel-args: --env JWT_SECRET=${{ env.JWT_SECRET }} --env DISCORD_BOT_TOKEN=${{ env.DISCORD_BOT_TOKEN }} --env DISCORD_SERVER_ID=${{ env.DISCORD_SERVER_ID }} --env DISCORD_ROLE_ID=${{ env.DISCORD_ROLE_ID }} --env HASURA_ENDPOINT=${{ env.HASURA_ENDPOINT }} --env HASURA_ADMIN_SECRET=${{ env.HASURA_ADMIN_SECRET }} --env MORALIS_API_KEY=${{ env.MORALIS_API_KEY }} --env COVALENTHQ_API_KEY=${{ env.COVALENTHQ_API_KEY }} --env ALCHEMY_MAINNET_API_KEY=${{ env.ALCHEMY_MAINNET_API_KEY }} --env ALCHEMY_RINKEBY_API_KEY=${{ env.ALCHEMY_RINKEBY_API_KEY }} ${{ env.PROD_FLAG }} ${{ env.SCOPE_FLAG }}
+  frontend:
+    runs-on: ubuntu-latest
+    outputs:
+      preview-url: ${{ steps.determine_url.outputs.url }}
+    needs:
+      - backend
+      - environment_check
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_FRONTEND_PROJECT_ID }}
+      INFURA_PROJECT_ID: ${{ secrets.INFURA_PROJECT_ID }}
+      BACKEND_URL: ${{ needs.backend.outputs.preview-url }}
+      PROD_FLAG: ${{ needs.environment_check.outputs.prod_flag }}
+    steps:
+      - name: Check Variables
+        uses: 0xJem/secret-gate-action@v1.1.1
+        with:
+          inputsToCheck: VERCEL_TOKEN,GITHUB_TOKEN,VERCEL_ORG_ID,VERCEL_PROJECT_ID,INFURA_PROJECT_ID,BACKEND_URL
+          failOnMissing: true
+      - name: Set Scope
+        run: |
+          echo "SCOPE_FLAG=--scope ${{ secrets.VERCEL_TEAM_ID }}" >> $GITHUB_ENV
+      - uses: actions/checkout@v2
+      - name: Setup node
+        uses: actions/setup-node@v2
+        with:
+          node-version-file: "frontend/.nvmrc"
+      - uses: amondnet/vercel-action@v20
+        id: frontend_deploy
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          working-directory: ./frontend
+          # Vercel/Next.js will replace the URL at build-time, not run-time
+          vercel-args: --build-env NEXT_PUBLIC_BACKEND_API_URL=${{ env.BACKEND_URL }} --build-env NEXT_PUBLIC_INFURA_ID=${{ env.INFURA_PROJECT_ID }} ${{ env.PROD_FLAG }} ${{ env.SCOPE_FLAG }}
+      - name: Production Domain Alias
+        # If doing a production build, we also link the domain name
+        # It can take some time after deployment for the domains to be ready, so we pause before linking the domain
+        run: |
+          if [[ ${{ needs.environment_check.outputs.production }} == true ]]; then
+            sleep 120
+            vercel --token ${{ env.VERCEL_TOKEN }} ${{ env.SCOPE_FLAG }} alias set ${{ steps.frontend_deploy.outputs.preview-url }} verified.olympusdao.finance
+          fi
+      - name: Staging Domain Alias
+        # If doing a staging (develop branch) build, we also link the domain name
+        # It can take some time after deployment for the domains to be ready, so we pause before linking the domain
+        run: |
+          if [[ ${{ needs.environment_check.outputs.staging }} == true ]]; then
+            sleep 120
+            vercel --token ${{ env.VERCEL_TOKEN }} ${{ env.SCOPE_FLAG }} alias set ${{ steps.frontend_deploy.outputs.preview-url }} verified-staging.olympusdao.finance
+          fi
+      - name: Determine output URL
+        id: determine_url
+        run: |
+          if [[ ${{ needs.environment_check.outputs.production }} == true ]]; then
+            echo "Frontend URL is verified.olympusdao.finance"
+            echo "::set-output name=url::verified.olympusdao.finance"
+          elif [[ ${{ needs.environment_check.outputs.staging }} == true ]]; then
+            echo "Frontend URL is verified-staging.olympusdao.finance"
+            echo "::set-output name=url::verified-staging.olympusdao.finance"
+          else
+            echo "Frontend URL is ${{ steps.frontend_deploy.outputs.preview-url }}"
+            echo "::set-output name=url::${{ steps.frontend_deploy.outputs.preview-url }}"
+          fi
+  discord:
+    runs-on: ubuntu-latest
+    needs:
+      - frontend
+      - environment_check
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      JWT_EXPIRATION_TIME: ${{ secrets.JWT_EXPIRATION_TIME }}
+      DISCORD_APP_ID: ${{ secrets.DISCORD_APP_ID }}
+      DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
+      DISCORD_PUBLIC_KEY: ${{ secrets.DISCORD_PUBLIC_KEY }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_DISCORD_PROJECT_ID }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      FRONTEND_URL: ${{ needs.frontend.outputs.preview-url }}
+      PROD_FLAG: ${{ needs.environment_check.outputs.prod_flag }}
+    steps:
+      - name: Check Variables
+        uses: 0xJem/secret-gate-action@v1.1.1
+        with:
+          inputsToCheck: JWT_SECRET,JWT_EXPIRATION_TIME,DISCORD_APP_ID,DISCORD_BOT_TOKEN,DISCORD_PUBLIC_KEY,VERCEL_PROJECT_ID,VERCEL_ORG_ID,FRONTEND_URL,VERCEL_TOKEN
+          failOnMissing: true
+      - name: Set Scope
+        run: |
+          echo "SCOPE_FLAG=--scope ${{ secrets.VERCEL_TEAM_ID }}" >> $GITHUB_ENV
+      - uses: actions/checkout@v2
+      - name: Setup node
+        uses: actions/setup-node@v2
+        with:
+          node-version-file: "discord/.nvmrc"
+      - name: Install Dependencies
+        run: yarn install --frozen-lockfile
+        working-directory: ./discord
+      - name: Sync Discord commands
+        run: yarn run slash-up sync
+        working-directory: ./discord
+      - uses: amondnet/vercel-action@v20
+        id: discord_deploy
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          vercel-org-id: ${{ env.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ env.VERCEL_PROJECT_ID }}
+          working-directory: ./discord
+          vercel-args: --env JWT_SECRET=${{ env.JWT_SECRET }} --env JWT_EXPIRATION_TIME=${{ env.JWT_EXPIRATION_TIME }} --env DISCORD_APP_ID=${{ env.DISCORD_APP_ID }} --env DISCORD_BOT_TOKEN=${{ env.DISCORD_BOT_TOKEN }} --env DISCORD_PUBLIC_KEY=${{ env.DISCORD_PUBLIC_KEY }} --env FRONTEND_URL=${{ env.FRONTEND_URL }} ${{ env.PROD_FLAG }} ${{ env.SCOPE_FLAG }}
+      - name: Production Domain Alias
+        # If doing a production build, we also set a consistent domain name
+        # It can take some time after deployment for the domains to be ready, so we pause before linking the domain
+        run: |
+          if [[ ${{ needs.environment_check.outputs.production }} == true ]]; then
+            sleep 120
+            vercel --token ${{ env.VERCEL_TOKEN }} ${{ env.SCOPE_FLAG }} alias set ${{ steps.discord_deploy.outputs.preview-url }} verified-ohmies-discord.vercel.app
+          fi
+      - name: Staging Domain Alias
+        # If doing a staging (develop branch) build, we also link the domain name
+        # It can take some time after deployment for the domains to be ready, so we pause before linking the domain
+        run: |
+          if [[ ${{ needs.environment_check.outputs.staging }} == true ]]; then
+            sleep 120
+            vercel --token ${{ env.VERCEL_TOKEN }} ${{ env.SCOPE_FLAG }} alias set ${{ steps.discord_deploy.outputs.preview-url }} verified-ohmies-discord-staging.vercel.app
+          fi
+
+  # TODO run tests

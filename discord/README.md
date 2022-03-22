@@ -14,31 +14,16 @@ This back-end infrastructure is composed by one API endpoint, which can be found
 
 ## Discord
 
-Use the same credentials as the Discord bot and application created for the `backend` sub-project.
+- Create a Discord server if you don't have one already. Create the role you want to give the user after they've authenticated with Ethereum. For example, I named my role `verified`.
+
+> Important: this role must be lower in the hierarchy than the one for the bot you create in the next step, otherwise you'll get a "missing access" error. See [here](https://support.discord.com/hc/en-us/articles/214836687-Role-Management-101) how to move a role up or down in the hierarchy.
+
+- [Set up an application for your bot](https://discordjs.guide/preparations/setting-up-a-bot-application.html#creating-your-bot)
+- Select the following boxes in the OAuth2 tab. Open the link marked in red and choose your server to add the bot.
 
 ## Continuous Deployment
 
 GitHub Actions is used to deploy to Vercel the slash commands as a serverless function.
-
-The following secrets need to be defined in the GitHub repo in order for continuous deployment to be successful:
-
-- `VERCEL_ORG_ID`: The Vercel org ID
-- `VERCEL_DISCORD_PROJECT_ID`: The Vercel project ID
-- `VERCEL_TOKEN`:
-- `JWT_SECRET`: the JWT secret shared between the backend and discord. See the `backend/README.md` file for information.
-- `JWT_EXPIRATION_TIME`: Recommended: 1d
-- `DISCORD_APP_ID`
-- `DISCORD_BOT_TOKEN`
-- `DISCORD_PUBLIC_KEY`
-
-Certain variables will have different values in a production environment:
-
-- `DISCORD_APP_ID`, `DISCORD_BOT_TOKEN` and `DISCORD_PUBLIC_KEY`: the values in a production environment will be different
-
-To set variables for the production environment:
-
-1. Create the production environment and restrict to the `main` branch: <https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment#environment-secrets>
-2. On the environments screen, add entries under the "environment secrets" section.
 
 ### Deployment URL
 

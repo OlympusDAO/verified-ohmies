@@ -46,27 +46,11 @@ This back-end infrastructure is composed by two different API endpoints, which c
 
 To run locally, you can populate a `.env` file manually using `.env.example`.
 
-Alternatively, you can utilise the secrets stored in Vercel:
-
-1. Login (if not already): `vercel login`
-2. `vercel pull`: this will populate a `.env` file with secrets from the `Development` environment
-
-### JWT
+#### JWT
 
 JWT is used to sign messages sent between the backend and other services.
 
 To generate the JWT secret: `node -e "console.log(require('crypto').randomBytes(256).toString('base64'));"`
-
-### Discord
-
-- Create a Discord server if you don't have one already. Create the role you want to give the user after they've authenticated with Ethereum. For example, I named my role `verified`.
-
-> Important: this role must be lower in the hierarchy than the one for the bot you create in the next step, otherwise you'll get a "missing access" error. See [here](https://support.discord.com/hc/en-us/articles/214836687-Role-Management-101) how to move a role up or down in the hierarchy.
-
-- [Set up an application for your bot](https://discordjs.guide/preparations/setting-up-a-bot-application.html#creating-your-bot)
-- Select the following boxes in the OAuth2 tab. Open the link marked in red and choose your server to add the bot.
-
-![Discord OAuth2 Permissions](img/discord-oauth2-permissions.png)
 
 ### Install dependencies locally
 
@@ -91,41 +75,11 @@ yarn install --network-concurrency 1
 
 ### Deployment
 
-```sh
-vercel --prod
-```
+Continuous deployment is implemented through Vercel, which handles end-to-end deployment of the entire stack.
 
 > Check on your Discord server whether you now have the command `/verified` there.
 
 > Tips: If you try calling it, the server still won't respond, because you haven't yet told Discord where the Interactions URL is (next step).
-
-#### Continuous Deployment
-
-The following secrets need to be defined in the GitHub repo in order for continuous deployment to be successful:
-
-- `VERCEL_ORG_ID`: The Vercel org ID
-- `VERCEL_PROJECT_ID`: The Vercel project ID for the backend
-- `VERCEL_TOKEN`:
-- `JWT_SECRET`: the JWT secret shared between the backend and discord. See [above](#JWT)
-- `DISCORD_BOT_TOKEN`:
-- `DISCORD_SERVER_ID`: Right-click your server on Discord and select Copy ID to get this
-- `DISCORD_ROLE_ID`: Right-click your server on Discord -> Server Settings -> Roles -> "...". There may be a role already created by the bot integration, but that likely won't work, and you'll need to create a new role.
-- `HASURA_ENDPOINT`:
-- `HASURA_ADMIN_SECRET`:
-- `MORALIS_API_KEY`: Click on your profile picture (top-right), then "API", then copy the value next to "Web3 API Key"
-- `COVALENTHQ_API_KEY`:
-- `ALCHEMY_MAINNET_API_KEY`:
-- `ALCHEMY_RINKEBY_API_KEY`:
-
-Certain variables will have different values in a production environment:
-
-- `DISCORD_BOT_TOKEN`, `DISCORD_SERVER_ID` and `DISCORD_ROLE_ID`: the values in a production environment will be different
-- `HASURA_ENDPOINT` and `HASURA_ADMIN_SECRET`: the Hasura instance is likely to be different
-
-To set variables for the production environment:
-
-1. Create the production environment and restrict to the `main` branch: <https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment#environment-secrets>
-2. On the environments screen, add entries under the "environment secrets" section.
 
 ### Future Improvements
 

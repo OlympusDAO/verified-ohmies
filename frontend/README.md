@@ -48,15 +48,6 @@ vercel dev
 vercel --prod
 ```
 
-#### Continuous Deployment
-
-The following secrets need to be defined in the GitHub repo in order for continuous deployment to be successful:
-
-- `VERCEL_ORG_ID`: The Vercel org ID
-- `VERCEL_PROJECT_ID`: The Vercel project ID for the backend
-- `VERCEL_TOKEN`:
-- `INFURA_PROJECT_ID`:
-
 ## Supported Networks
 
 - Production builds only support Ethereum mainnet, otherwise a user could have tokens on a testnet and feature the role in the Discord server.

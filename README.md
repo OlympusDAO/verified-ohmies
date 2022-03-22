@@ -52,36 +52,36 @@ Initial setup for deployment is a little complicated, so is being documented her
    - Select the following boxes in the OAuth2 -> URL Generator tab. Open the link marked in red and choose your server to add the bot. ![Discord OAuth2 Permissions](img/discord-oauth2-permissions.png)
    - Note the app ID, bot token and public key of each (and which server it belongs to)
 4. Set secrets in the GitHub repo. All deployments will use these secrets by default, so avoid using any instances that have production data that could be modified.
-   - `VERCEL_ORG_ID`: The Vercel org ID
-   - `VERCEL_TEAM_ID`: The Vercel team ID (same as org)
-   - `VERCEL_BACKEND_PROJECT_ID`: The Vercel project ID for the backend
-   - `VERCEL_FRONTEND_PROJECT_ID`: The Vercel project ID for the frontend
-   - `VERCEL_DISCORD_PROJECT_ID`: The Vercel project ID for the Discord bot
-   - `VERCEL_TOKEN`:
-   - `INFURA_PROJECT_ID`:
-   - `JWT_SECRET`: the JWT secret shared between the backend and discord. `node -e "console.log(require('crypto').randomBytes(256).toString('base64'));"`
-   - `JWT_EXPIRATION_TIME`: Recommended: 1d
-   - `DISCORD_SERVER_ID`: Right-click your server on Discord and select Copy ID to get this
-   - `DISCORD_ROLE_ID`: Right-click your server on Discord -> Server Settings -> Roles -> "...". There may be a role already created by the bot integration, but that likely won't work, and you'll need to create a new role.
+   - `ALCHEMY_MAINNET_API_KEY`:
+   - `ALCHEMY_RINKEBY_API_KEY`:
+   - `COVALENTHQ_API_KEY`:
    - `DISCORD_APP_ID`:
    - `DISCORD_BOT_TOKEN`:
    - `DISCORD_PUBLIC_KEY`:
-   - `HASURA_ENDPOINT`:
+   - `DISCORD_ROLE_ID`: Right-click your server on Discord -> Server Settings -> Roles -> "...". There may be a role already created by the bot integration, but that likely won't work, and you'll need to create a new role.
+   - `DISCORD_SERVER_ID`: Right-click your server on Discord and select Copy ID to get this
    - `HASURA_ADMIN_SECRET`:
+   - `HASURA_ENDPOINT`:
+   - `INFURA_PROJECT_ID`:
+   - `JWT_EXPIRATION_TIME`: Recommended: 1d
+   - `JWT_SECRET`: the JWT secret shared between the backend and discord. `node -e "console.log(require('crypto').randomBytes(256).toString('base64'));"`
    - `MORALIS_API_KEY`: Click on your profile picture (top-right), then "API", then copy the value next to "Web3 API Key"
-   - `COVALENTHQ_API_KEY`:
-   - `ALCHEMY_MAINNET_API_KEY`:
-   - `ALCHEMY_RINKEBY_API_KEY`:
+   - `VERCEL_BACKEND_PROJECT_ID`: The Vercel project ID for the backend
+   - `VERCEL_DISCORD_PROJECT_ID`: The Vercel project ID for the Discord bot
+   - `VERCEL_FRONTEND_PROJECT_ID`: The Vercel project ID for the frontend
+   - `VERCEL_ORG_ID`: The Vercel org ID
+   - `VERCEL_TOKEN`:
+   - `VERCEL_TEAM_ID`: The Vercel team ID (same as org)
 5. Set secrets for the production environment
    1. Create the production environment and restrict to the `main` branch: <https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment#environment-secrets>
    2. On the environments screen, add entries under the "environment secrets" section with production values.
-      - `DISCORD_SERVER_ID`
-      - `DISCORD_ROLE_ID`
       - `DISCORD_APP_ID`
       - `DISCORD_BOT_TOKEN`
       - `DISCORD_PUBLIC_KEY`
-      - `HASURA_ENDPOINT`
+      - `DISCORD_ROLE_ID`
+      - `DISCORD_SERVER_ID`
       - `HASURA_ADMIN_SECRET`
+      - `HASURA_ENDPOINT`
 6. Deploy the stack
    - Merging a pull request into the `main` or `develop` branches will result in a production and staging deployment, respectively.
    - Pull requests into `main` and `develop` will also result in "preview" deployments.

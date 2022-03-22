@@ -79,7 +79,8 @@ Initial setup for deployment is a little complicated, so is being documented her
       - `HASURA_ENDPOINT`
       - `HASURA_ADMIN_SECRET`
 6. Deploy the stack
-   - View the GitHub repo -> Actions tab -> "Run workflow"
+   - Merging a pull request into the `main` or `develop` branches will result in a production and staging deployment, respectively.
+   - Pull requests into `main` and `develop` will also result in "preview" deployments.
 7. Set interactions URL
    - After deployment, the interactions URL in Discord can be set (for each app).
    - URL values:

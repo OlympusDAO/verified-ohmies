@@ -31,6 +31,10 @@ This is similar to what collab.land does for NFT’s, but here we have the added
 - The aim is to have v1 ready around the end of January 2022. This version will include only gOHM on Ethereum Mainnet.
 - Taking what we learn from v1, we will incrementally add the rest of the Olympus tokens and the other chains.
 
+## How To Use
+
+After setup, run the following command `/verified`
+
 ## Deployment Setup
 
 Initial setup for deployment is a little complicated, so is being documented here:
@@ -86,6 +90,7 @@ Initial setup for deployment is a little complicated, so is being documented her
    - URL values:
      - Production: `https://verified-ohmies-discord.vercel.app/api/command-interactions`
      - Staging: `https://verified-ohmies-discord-staging.vercel.app/api/command-interactions`
+     - Other branches: copy the URL from the Vercel deployment for the discord project, and append `/api/command-interactions`
    - Follow these steps:
      1. Visit the applications in the developer portal: <https://discord.com/developers/applications>
      2. Select the app created

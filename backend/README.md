@@ -77,9 +77,7 @@ yarn install --network-concurrency 1
 
 Continuous deployment is implemented through Vercel, which handles end-to-end deployment of the entire stack.
 
-> Check on your Discord server whether you now have the command `/verified` there.
-
-> Tips: If you try calling it, the server still won't respond, because you haven't yet told Discord where the Interactions URL is (next step).
+Tips: If you try calling it, the server still won't respond, because you haven't yet told Discord where the Interactions URL is (next step).
 
 ### Future Improvements
 

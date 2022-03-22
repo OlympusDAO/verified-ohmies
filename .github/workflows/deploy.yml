@@ -59,26 +59,31 @@ jobs:
     outputs:
       preview-url: ${{ steps.backend_deploy.outputs.preview-url }}
     env:
-      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_BACKEND_PROJECT_ID }}
-      JWT_SECRET: ${{ secrets.JWT_SECRET }}
-      DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
-      DISCORD_SERVER_ID: ${{ secrets.DISCORD_SERVER_ID }}
-      DISCORD_ROLE_ID: ${{ secrets.DISCORD_ROLE_ID }}
-      HASURA_ENDPOINT: ${{ secrets.HASURA_ENDPOINT }}
-      HASURA_ADMIN_SECRET: ${{ secrets.HASURA_ADMIN_SECRET }}
-      MORALIS_API_KEY: ${{ secrets.MORALIS_API_KEY }}
-      COVALENTHQ_API_KEY: ${{ secrets.COVALENTHQ_API_KEY }}
       ALCHEMY_MAINNET_API_KEY: ${{ secrets.ALCHEMY_MAINNET_API_KEY }}
       ALCHEMY_RINKEBY_API_KEY: ${{ secrets.ALCHEMY_RINKEBY_API_KEY }}
+      COVALENTHQ_API_KEY: ${{ secrets.COVALENTHQ_API_KEY }}
+      DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
+      DISCORD_BOT_TOKEN_PROD: ${{ secrets.DISCORD_BOT_TOKEN_PROD }}
+      DISCORD_ROLE_ID: ${{ secrets.DISCORD_ROLE_ID }}
+      DISCORD_ROLE_ID_PROD: ${{ secrets.DISCORD_ROLE_ID_PROD }}
+      DISCORD_SERVER_ID: ${{ secrets.DISCORD_SERVER_ID }}
+      DISCORD_SERVER_ID_PROD: ${{ secrets.DISCORD_SERVER_ID_PROD }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      HASURA_ADMIN_SECRET: ${{ secrets.HASURA_ADMIN_SECRET }}
+      HASURA_ADMIN_SECRET_PROD: ${{ secrets.HASURA_ADMIN_SECRET_PROD }}
+      HASURA_ENDPOINT: ${{ secrets.HASURA_ENDPOINT }}
+      HASURA_ENDPOINT_PROD: ${{ secrets.HASURA_ENDPOINT_PROD }}
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      MORALIS_API_KEY: ${{ secrets.MORALIS_API_KEY }}
       PROD_FLAG: ${{ needs.environment_check.outputs.prod_flag }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_BACKEND_PROJECT_ID }}
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
     steps:
       - name: Check Variables
         uses: 0xJem/secret-gate-action@v1.1.1
         with:
-          inputsToCheck: VERCEL_TOKEN,GITHUB_TOKEN,VERCEL_ORG_ID,VERCEL_PROJECT_ID,JWT_SECRET,DISCORD_BOT_TOKEN,DISCORD_SERVER_ID,DISCORD_ROLE_ID,HASURA_ENDPOINT,HASURA_ADMIN_SECRET,MORALIS_API_KEY,COVALENTHQ_API_KEY,ALCHEMY_MAINNET_API_KEY,ALCHEMY_RINKEBY_API_KEY
+          inputsToCheck: ALCHEMY_MAINNET_API_KEY,ALCHEMY_RINKEBY_API_KEY,COVALENTHQ_API_KEY,DISCORD_BOT_TOKEN,DISCORD_BOT_TOKEN_PROD,DISCORD_ROLE_ID,DISCORD_ROLE_ID_PROD,DISCORD_SERVER_ID,DISCORD_SERVER_ID_PROD,GITHUB_TOKEN,HASURA_ADMIN_SECRET,HASURA_ADMIN_SECRET_PROD,HASURA_ENDPOINT,HASURA_ENDPOINT_PROD,JWT_SECRET,MORALIS_API_KEY,VERCEL_ORG_ID,VERCEL_PROJECT_ID,VERCEL_TOKEN
           failOnMissing: true
       - name: Set Scope
         run: |
@@ -88,6 +93,19 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version-file: "backend/.nvmrc"
+      # Certain environment variables need different values in production
+      # We don't use GitHub Actions' environments, because those secrets are only available
+      # when a job states the environment that it belongs to. It would result in a lot of
+      # duplicated code.
+      - name: Set production environment variables
+        run: |
+          if [[ ${{ needs.environment_check.outputs.production }} == true ]]; then
+            echo "DISCORD_BOT_TOKEN=${{ env.DISCORD_BOT_TOKEN_PROD }}" >> $GITHUB_ENV
+            echo "DISCORD_ROLE_ID=${{ env.DISCORD_ROLE_ID_PROD }}" >> $GITHUB_ENV
+            echo "DISCORD_SERVER_ID=${{ env.DISCORD_SERVER_ID_PROD }}" >> $GITHUB_ENV
+            echo "HASURA_ADMIN_SECRET=${{ env.HASURA_ADMIN_SECRET_PROD }}" >> $GITHUB_ENV
+            echo "HASURA_ENDPOINT=${{ env.HASURA_ENDPOINT_PROD }}" >> $GITHUB_ENV
+          fi
       # We build the source so that typechain is compiled. The Vercel deployment fails if this compilation is done on their servers.
       - name: Build
         run: cd backend && yarn install --frozen-lockfile && yarn run build
@@ -108,18 +126,18 @@ jobs:
       - backend
       - environment_check
     env:
-      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      BACKEND_URL: ${{ needs.backend.outputs.preview-url }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      INFURA_PROJECT_ID: ${{ secrets.INFURA_PROJECT_ID }}
+      PROD_FLAG: ${{ needs.environment_check.outputs.prod_flag }}
       VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
       VERCEL_PROJECT_ID: ${{ secrets.VERCEL_FRONTEND_PROJECT_ID }}
-      INFURA_PROJECT_ID: ${{ secrets.INFURA_PROJECT_ID }}
-      BACKEND_URL: ${{ needs.backend.outputs.preview-url }}
-      PROD_FLAG: ${{ needs.environment_check.outputs.prod_flag }}
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
     steps:
       - name: Check Variables
         uses: 0xJem/secret-gate-action@v1.1.1
         with:
-          inputsToCheck: VERCEL_TOKEN,GITHUB_TOKEN,VERCEL_ORG_ID,VERCEL_PROJECT_ID,INFURA_PROJECT_ID,BACKEND_URL
+          inputsToCheck: BACKEND_URL,GITHUB_TOKEN,INFURA_PROJECT_ID,VERCEL_ORG_ID,VERCEL_PROJECT_ID,VERCEL_TOKEN
           failOnMissing: true
       - name: Set Scope
         run: |
@@ -174,21 +192,24 @@ jobs:
       - frontend
       - environment_check
     env:
-      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-      JWT_SECRET: ${{ secrets.JWT_SECRET }}
-      JWT_EXPIRATION_TIME: ${{ secrets.JWT_EXPIRATION_TIME }}
       DISCORD_APP_ID: ${{ secrets.DISCORD_APP_ID }}
+      DISCORD_APP_ID_PROD: ${{ secrets.DISCORD_APP_ID_PROD }}
       DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
+      DISCORD_BOT_TOKEN_PROD: ${{ secrets.DISCORD_BOT_TOKEN_PROD }}
       DISCORD_PUBLIC_KEY: ${{ secrets.DISCORD_PUBLIC_KEY }}
-      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_DISCORD_PROJECT_ID }}
-      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      DISCORD_PUBLIC_KEY_PROD: ${{ secrets.DISCORD_PUBLIC_KEY_PROD }}
       FRONTEND_URL: ${{ needs.frontend.outputs.preview-url }}
+      JWT_EXPIRATION_TIME: ${{ secrets.JWT_EXPIRATION_TIME }}
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
       PROD_FLAG: ${{ needs.environment_check.outputs.prod_flag }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_DISCORD_PROJECT_ID }}
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
     steps:
       - name: Check Variables
         uses: 0xJem/secret-gate-action@v1.1.1
         with:
-          inputsToCheck: JWT_SECRET,JWT_EXPIRATION_TIME,DISCORD_APP_ID,DISCORD_BOT_TOKEN,DISCORD_PUBLIC_KEY,VERCEL_PROJECT_ID,VERCEL_ORG_ID,FRONTEND_URL,VERCEL_TOKEN
+          inputsToCheck: DISCORD_APP_ID,DISCORD_APP_ID_PROD,DISCORD_BOT_TOKEN,DISCORD_BOT_TOKEN_PROD,DISCORD_PUBLIC_KEY,DISCORD_PUBLIC_KEY_PROD,FRONTEND_URL,JWT_EXPIRATION_TIME,JWT_SECRET,VERCEL_ORG_ID,VERCEL_PROJECT_ID,VERCEL_TOKEN
           failOnMissing: true
       - name: Set Scope
         run: |
@@ -198,6 +219,17 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version-file: "discord/.nvmrc"
+      # Certain environment variables need different values in production
+      # We don't use GitHub Actions' environments, because those secrets are only available
+      # when a job states the environment that it belongs to. It would result in a lot of
+      # duplicated code.
+      - name: Set production environment variables
+        run: |
+          if [[ ${{ needs.environment_check.outputs.production }} == true ]]; then
+            echo "DISCORD_APP_ID=${{ env.DISCORD_APP_ID_PROD }}" >> $GITHUB_ENV
+            echo "DISCORD_BOT_TOKEN=${{ env.DISCORD_BOT_TOKEN_PROD }}" >> $GITHUB_ENV
+            echo "DISCORD_PUBLIC_KEY=${{ env.DISCORD_PUBLIC_KEY_PROD }}" >> $GITHUB_ENV
+          fi
       - name: Install Dependencies
         run: yarn install --frozen-lockfile
         working-directory: ./discord

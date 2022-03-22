@@ -49,6 +49,7 @@ Initial setup for deployment is a little complicated, so is being documented her
    - Note the app ID, bot token and public key of each (and which server it belongs to)
 4. Set secrets in the GitHub repo. All deployments will use these secrets by default, so avoid using any instances that have production data that could be modified.
    - `VERCEL_ORG_ID`: The Vercel org ID
+   - `VERCEL_TEAM_ID`: The Vercel team ID (same as org)
    - `VERCEL_BACKEND_PROJECT_ID`: The Vercel project ID for the backend
    - `VERCEL_FRONTEND_PROJECT_ID`: The Vercel project ID for the frontend
    - `VERCEL_DISCORD_PROJECT_ID`: The Vercel project ID for the Discord bot

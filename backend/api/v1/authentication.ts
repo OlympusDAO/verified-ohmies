@@ -87,6 +87,10 @@ const auth = async (request: VercelRequest, response: VercelResponse) => {
       await hasuraRequest(SET_USER_VERIFIED_TOKENS, { discordUserId, tokens });
       if (tokens.length > 0) {
         // Assign discord role
+        console.log("role ID = " + process.env.DISCORD_ROLE_ID);
+        console.log("role ID string = " + (process.env.DISCORD_ROLE_ID as string));
+        console.log(typeof process.env.DISCORD_ROLE_ID);
+        console.log(typeof (process.env.DISCORD_ROLE_ID as string));
         const { assignedRole } = await assignRole(
           process.env.DISCORD_SERVER_ID as string,
           process.env.DISCORD_ROLE_ID as string,

@@ -174,7 +174,10 @@ const fetchBalances = ({
     `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/api/balances?address=${address}&chainId=${chainId}`
   ).then(async (d) => {
     const r = await d.json();
-    if (!d.ok) throw new Error("Something went wrong fetching your balance. Try refreshing the page.");
+    if (!d.ok)
+      throw new Error(
+        "Something went wrong fetching your balance. Try refreshing the page."
+      );
     return r;
   }) as Promise<Token[]>;
 
@@ -194,7 +197,6 @@ const Home = ({ initialAppTheme }) => {
     authStatus,
     error,
   } = state;
-
   const connect = useCallback(async function () {
     // This is the initial `provider` that is returned when
     // using web3Modal to connect. Can be MetaMask or WalletConnect.
@@ -316,12 +318,11 @@ const Home = ({ initialAppTheme }) => {
   useEffect(() => {
     if (authStatus === "waiting") {
       dots = textDots(3, {
-        "element": document.getElementById("CTAButtonText"),
-        "text": "Authenticating",
-        "interval": 300
+        element: document.getElementById("CTAButtonText"),
+        text: "Authenticating",
+        interval: 300,
       });
-    }
-    else {
+    } else {
       if (dots) {
         dots.stop();
       }
@@ -363,7 +364,6 @@ const Home = ({ initialAppTheme }) => {
             });
           }
         }
-
       };
 
       const handleChainChanged = (chain: string[]) => {
@@ -412,11 +412,20 @@ const Home = ({ initialAppTheme }) => {
         width={"75%"}
         margin={"auto"}
       >
-        {error && <ErrorNotification show={Boolean(error)} onDismiss={
-          () => dispatch({
-            type: "SET_ERROR",
-            error: null,
-        })} dismissible>{error}</ErrorNotification>}
+        {error && (
+          <ErrorNotification
+            show={Boolean(error)}
+            onDismiss={() =>
+              dispatch({
+                type: "SET_ERROR",
+                error: null,
+              })
+            }
+            dismissible
+          >
+            {error}
+          </ErrorNotification>
+        )}
         <Logo currentPage={currentPage} dispatch={dispatch} />
         {/* Info Page */}
         {currentPage == "info" && <Info />}

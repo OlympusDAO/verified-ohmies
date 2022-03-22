@@ -32,16 +32,23 @@ export const assignRole = async (
   await waitForClient();
   let assignedRole = false;
   let sentMessage = false;
-  try {
-    const guild = await client.guilds.fetch(discordServerId);
-    const member = await guild.members.fetch(discordUserId);
-    await member.roles.add(discordRoleId);
-    assignedRole = true;
-    await member.send(
-      `Congrats fren, you're now a verified Ohmie! Ethereum Address: ${address}; Chain ID: ${chainId}; Owned Tokens: ${tokens}`
-    );
-    sentMessage = true;
-  } catch {}
+
+  const guild = await client.guilds.fetch(discordServerId);
+
+  const role = await guild.roles.cache.get(discordRoleId);
+  if (!role) {
+    console.log("Role not found");
+  } else {
+    console.log("role = " + role.name);
+  }
+
+  const member = await guild.members.fetch(discordUserId);
+  await member.roles.add(discordRoleId);
+  assignedRole = true;
+  await member.send(
+    `Congrats fren, you're now a verified Ohmie! Ethereum Address: ${address}; Chain ID: ${chainId}; Owned Tokens: ${tokens}`
+  );
+  sentMessage = true;
 
   return { assignedRole, sentMessage };
 };

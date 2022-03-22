@@ -1,0 +1,34 @@
+{
+  "name": "verified-ohmies-discord",
+  "version": "0.1.0",
+  "description": "The discord infrastructure for Verified Ohmies",
+  "private": true,
+  "engines": {
+    "node": "14.x"
+  },
+  "scripts": {
+    "sync": "yarn run slash-up sync",
+    "sync:dev": "yarn run slash-up sync -e development",
+    "build": "mkdir -p public && touch public/nothing.txt && tsc",
+    "deploy:preview": "source .env && yarn run vercel --env JWT_SECRET=\"$JWT_SECRET\" --env JWT_EXPIRATION_TIME=\"$JWT_EXPIRATION_TIME\" --env DISCORD_APP_ID=\"$DISCORD_APP_ID\" --env DISCORD_BOT_TOKEN=\"$DISCORD_BOT_TOKEN\" --env DISCORD_PUBLIC_KEY=\"$DISCORD_PUBLIC_KEY\" --env FRONTEND_URL=\"$FRONTEND_URL\"",
+    "lint": "npx eslint --ext .ts .",
+    "lint:fix": "npx eslint --ext .ts . --fix"
+  },
+  "dependencies": {
+    "jsonwebtoken": "^8.5.1",
+    "slash-create": "^5.2.1"
+  },
+  "devDependencies": {
+    "@types/jsonwebtoken": "^8.5.6",
+    "@types/node": "^16.7.13",
+    "@types/react": "^17.0.37",
+    "@vercel/node": "^1.12.1",
+    "discord.js": "12.5.3",
+    "eslint": "^7.15.0",
+    "eslint-config-prettier": "^7.0.0",
+    "eslint-plugin-prettier": "^3.3.0",
+    "prettier": "^2.2.1",
+    "slash-up": "^1.0.11",
+    "vercel": "^24.0.0"
+  }
+}

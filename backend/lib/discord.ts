@@ -36,11 +36,7 @@ export const assignRole = async (
   const guild = await client.guilds.fetch(discordServerId);
 
   const role = await guild.roles.cache.get(discordRoleId);
-  if (!role) {
-    console.log("Role not found");
-  } else {
-    console.log("role = " + role.name);
-  }
+  if (!role) throw new Error("Discord role ID was invalid: " + discordRoleId);
 
   const member = await guild.members.fetch(discordUserId);
   await member.roles.add(discordRoleId);

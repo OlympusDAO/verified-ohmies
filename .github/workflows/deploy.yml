@@ -160,10 +160,10 @@ jobs:
         run: |
           if [[ ${{ needs.environment_check.outputs.production }} == true ]]; then
             echo "Frontend URL is verified.olympusdao.finance"
-            echo "::set-output name=url::verified.olympusdao.finance"
+            echo "::set-output name=url::https://verified.olympusdao.finance"
           elif [[ ${{ needs.environment_check.outputs.staging }} == true ]]; then
             echo "Frontend URL is verified-staging.olympusdao.finance"
-            echo "::set-output name=url::verified-staging.olympusdao.finance"
+            echo "::set-output name=url::https://verified-staging.olympusdao.finance"
           else
             echo "Frontend URL is ${{ steps.frontend_deploy.outputs.preview-url }}"
             echo "::set-output name=url::${{ steps.frontend_deploy.outputs.preview-url }}"

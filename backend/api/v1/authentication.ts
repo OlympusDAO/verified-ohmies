@@ -6,7 +6,7 @@ import { assignRole } from "../../lib/discord";
 import { hasuraRequest } from "../../lib/hasura";
 import { tokensOwned } from "../../lib/fetchBalances";
 import { SET_USER_VERIFIED_TOKENS, SET_USER_VERIFIED_AUTHSTATUS } from "../../graphql/user";
-import { CHAIN_IDS_DEVELOPMENT, CHAIN_IDS_PRODUCTION, MINIMUM_OHM_EQUIV_AUTH } from "../../config";
+import { CHAIN_IDS_DEVELOPMENT, CHAIN_IDS_PRODUCTION, MINIMUM_OHM_EQUIV_AUTH, SEND_DM_ASSIGN } from "../../config";
 
 const JWT_EXPIRED_ERROR = "Your token has expired. Call the verification command on Discord again to get a new one.";
 const JWT_INVALID_ERROR =
@@ -57,8 +57,8 @@ const auth = async (request: VercelRequest, response: VercelResponse) => {
       if (error instanceof jwt.TokenExpiredError) errorMessage = JWT_EXPIRED_ERROR;
       else if (error instanceof jwt.JsonWebTokenError) errorMessage = JWT_INVALID_ERROR;
       else errorMessage = error.message;
-      console.log(`/api/v1/authentication GET error: ${errorMessage} (discordUserId: ${discordUserId})`);
-      console.log(`Stack trace:\n${error.stack}`);
+      console.error(`/api/v1/authentication GET error: ${errorMessage} (discordUserId: ${discordUserId})`);
+      console.error(`Stack trace:\n${error.stack}`);
       response.status(500).send({ error: errorMessage });
     }
   } else if (request.method == "POST") {
@@ -93,7 +93,8 @@ const auth = async (request: VercelRequest, response: VercelResponse) => {
           discordUserId,
           address,
           chainId,
-          tokens
+          tokens,
+          SEND_DM_ASSIGN
         );
         if (!assignedRole) throw Error("There's been an error assigning the role on Discord.");
         await hasuraRequest(SET_USER_VERIFIED_AUTHSTATUS, { discordUserId, authStatus: "AUTH_SUCCESS" });

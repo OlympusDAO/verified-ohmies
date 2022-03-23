@@ -41,10 +41,21 @@ export const assignRole = async (
   const member = await guild.members.fetch(discordUserId);
   await member.roles.add(discordRoleId);
   assignedRole = true;
-  await member.send(
-    `Congrats fren, you're now a verified Ohmie! Ethereum Address: ${address}; Chain ID: ${chainId}; Owned Tokens: ${tokens}`
-  );
-  sentMessage = true;
+
+  // The Discord API will throw an error if the user does not have DMs enabled for non-friends
+  // We catch and log it, but don't take any action
+  try {
+    await member.send(
+      `Congrats fren, you're now a verified Ohmie! Ethereum Address: ${address}; Chain ID: ${chainId}; Owned Tokens: ${tokens}`
+    );
+    sentMessage = true;
+  } catch (e) {
+    const error = e as Error;
+    console.error(
+      `assignRole: Unexpected error when sending message to user: ${error.message} (discordUserId: ${discordUserId})`
+    );
+    console.error(`Stack trace:\n${error.stack}`);
+  }
 
   return { assignedRole, sentMessage };
 };
@@ -61,19 +72,28 @@ export const revokeRole = async (
   await waitForClient();
   let revokedRole = false;
   let sentMessage = false;
-  try {
-    const guild = await client.guilds.fetch(discordServerId);
-    const member = await guild.members.fetch(discordUserId);
-    await member.roles.remove(discordRoleId);
-    revokedRole = true;
 
-    if (sendNotificationDM) {
+  const guild = await client.guilds.fetch(discordServerId);
+  const member = await guild.members.fetch(discordUserId);
+  await member.roles.remove(discordRoleId);
+  revokedRole = true;
+
+  if (sendNotificationDM) {
+    // The Discord API will throw an error if the user does not have DMs enabled for non-friends
+    // We catch and log it, but don't take any action
+    try {
       await member.send(
         `Your Verified Ohmies role has been revoked because you don't own tokens amounting to a minimum of ${minThreshold} in address ${address} (Chain ID: ${chainId}).`
       );
       sentMessage = true;
+    } catch (e) {
+      const error = e as Error;
+      console.error(
+        `revokeRole: Unexpected error when sending message to user: ${error.message} (discordUserId: ${discordUserId})`
+      );
+      console.error(`Stack trace:\n${error.stack}`);
     }
-  } catch {}
+  }
 
   return { revokedRole, sentMessage };
 };

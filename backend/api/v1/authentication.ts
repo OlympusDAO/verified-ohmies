@@ -57,8 +57,8 @@ const auth = async (request: VercelRequest, response: VercelResponse) => {
       if (error instanceof jwt.TokenExpiredError) errorMessage = JWT_EXPIRED_ERROR;
       else if (error instanceof jwt.JsonWebTokenError) errorMessage = JWT_INVALID_ERROR;
       else errorMessage = error.message;
-      console.log(`/api/v1/authentication GET error: ${errorMessage} (discordUserId: ${discordUserId})`);
-      console.log(`Stack trace:\n${error.stack}`);
+      console.error(`/api/v1/authentication GET error: ${errorMessage} (discordUserId: ${discordUserId})`);
+      console.error(`Stack trace:\n${error.stack}`);
       response.status(500).send({ error: errorMessage });
     }
   } else if (request.method == "POST") {

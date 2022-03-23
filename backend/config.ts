@@ -14,3 +14,6 @@ export const MINIMUM_OHM_EQUIV_AUTH = 0.01;
 
 // Set to true if notification DM's should be sent to users when their role gets revoked because they don't have tokens anymore
 export const SEND_DM_REVOKE = false;
+
+// Set to true if notification DM's should be sent to users when their role gets assigned
+export const SEND_DM_ASSIGN = false;

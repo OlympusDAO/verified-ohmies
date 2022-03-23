@@ -27,7 +27,8 @@ export const assignRole = async (
   discordUserId: string,
   address: string,
   chainId: number,
-  tokens: string[]
+  tokens: string[],
+  sendNotificationDM: boolean
 ) => {
   await waitForClient();
   let assignedRole = false;
@@ -42,19 +43,21 @@ export const assignRole = async (
   await member.roles.add(discordRoleId);
   assignedRole = true;
 
-  // The Discord API will throw an error if the user does not have DMs enabled for non-friends
-  // We catch and log it, but don't take any action
-  try {
-    await member.send(
-      `Congrats fren, you're now a verified Ohmie! Ethereum Address: ${address}; Chain ID: ${chainId}; Owned Tokens: ${tokens}`
-    );
-    sentMessage = true;
-  } catch (e) {
-    const error = e as Error;
-    console.error(
-      `assignRole: Unexpected error when sending message to user: ${error.message} (discordUserId: ${discordUserId})`
-    );
-    console.error(`Stack trace:\n${error.stack}`);
+  if (sendNotificationDM) {
+    // The Discord API will throw an error if the user does not have DMs enabled for non-friends
+    // We catch and log it, but don't take any action
+    try {
+      await member.send(
+        `Congrats fren, you're now a verified Ohmie! Ethereum Address: ${address}; Chain ID: ${chainId}; Owned Tokens: ${tokens}`
+      );
+      sentMessage = true;
+    } catch (e) {
+      const error = e as Error;
+      console.error(
+        `assignRole: Unexpected error when sending message to user: ${error.message} (discordUserId: ${discordUserId})`
+      );
+      console.error(`Stack trace:\n${error.stack}`);
+    }
   }
 
   return { assignedRole, sentMessage };

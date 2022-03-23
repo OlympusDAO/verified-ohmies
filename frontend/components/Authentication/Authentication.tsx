@@ -90,7 +90,7 @@ const Authentication = ({
             <Box className={classes.paperBox} mt={2}>
               <Paper> {/*height:"2em", justifyContent:"center"}}>*/}
                 <Typography variant="body1" align="center">
-                  You don't own any tokens, fren :(
+                  Fren, you haven’t applied for your Olympus Citizenship.
                 </Typography>
               </Paper>
             </Box>
@@ -114,7 +114,7 @@ const Authentication = ({
               <Paper>
                 <Box display="flex" justifyContent="center" flexDirection="row">
                   <Typography variant="body1" align="center">
-                    Verified Ohmie, enjoy your stay at Mount Olympus!
+                    Verified Ohmie, your Olympus Citizenship has been approved.
                   </Typography>
                 </Box>
               </Paper>

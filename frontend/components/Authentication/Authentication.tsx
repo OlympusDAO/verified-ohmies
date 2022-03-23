@@ -1,13 +1,17 @@
 import { useContext } from "react";
 import { Typography, Grid, Box, makeStyles, SvgIcon } from "@material-ui/core";
-import { Paper, ErrorNotification, InfoNotification } from "@olympusdao/component-library";
+import {
+  Paper,
+  ErrorNotification,
+  InfoNotification,
+} from "@olympusdao/component-library";
 import BalancesBox from "./BalancesBox";
 import Address from "@components/Authentication/Address";
 import CTAButton from "@components/CTAButton";
 import { CustomThemeContext } from "@hooks/CustomThemeProvider";
 import VerifiedBadge from "../../public/icons/verified-badge.svg";
 import FailedBadge from "../../public/icons/failed-badge.svg";
-import { darkTheme } from "../../themes/dark"
+import { darkTheme } from "../../themes/dark";
 
 const useStyles = makeStyles((theme) => ({
   paperBox: {
@@ -28,7 +32,6 @@ const Authentication = ({
   authenticate,
   authStatus,
 }) => {
-
   const classes = useStyles();
   const { appTheme, setTheme } = useContext(CustomThemeContext);
 
@@ -43,11 +46,10 @@ const Authentication = ({
           justifyContent="center"
         >
           {authStatus == "success" && (
-            <InfoNotification style={{ background: "#2196f3"}} dismissible>
+            <InfoNotification style={{ background: "#2196f3" }} dismissible>
               Authentication successful!
             </InfoNotification>
-          )
-          }
+          )}
           <Box mb={5}>
             <Typography variant="h3">{chainData.name}</Typography>
           </Box>
@@ -88,7 +90,7 @@ const Authentication = ({
           {/* User doesn't own any tokens */}
           {gOHMBalance == 0 && (
             <Box className={classes.paperBox} mt={2}>
-              <Paper> {/*height:"2em", justifyContent:"center"}}>*/}
+              <Paper>
                 <Typography variant="body1" align="center">
                   Fren, you haven’t applied for your Olympus Citizenship.
                 </Typography>
@@ -159,7 +161,9 @@ const Authentication = ({
           <Box className={classes.paperBox} mt={2}>
             <Paper>
               <Box display="flex" justifyContent="center" flexDirection="row">
-                <Typography variant="body1" align="center">*sad Vitalik noises*</Typography>
+                <Typography variant="body1" align="center">
+                  *sad Vitalik noises*
+                </Typography>
               </Box>
             </Paper>
           </Box>

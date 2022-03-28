@@ -103,3 +103,5 @@ Manual deployments are supported through GitHub Actions:
 1. Select on the deployment in the left-hand list
 2. Select the branch to deploy on
 3. Hit "Run workflow"
+
+![Run Workflow](img/run-workflow.png)

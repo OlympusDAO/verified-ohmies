@@ -15,7 +15,7 @@
     "@olympusdao/component-library": "^1.6.1",
     "@types/js-cookie": "^3.0.1",
     "@walletconnect/web3-provider": "^1.6.5",
-    "ethers": "5.5.1",
+    "ethers": "5.5.4",
     "js-cookie": "^3.0.1",
     "next": "12",
     "next-fonts": "^1.5.1",

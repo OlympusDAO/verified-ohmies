@@ -5370,10 +5370,10 @@ verror@1.10.0:
     core-util-is "1.0.2"
     extsprintf "^1.2.0"
 
-walletlink@^2.1.11:
-  version "2.2.9"
-  resolved "https://registry.yarnpkg.com/walletlink/-/walletlink-2.2.9.tgz#18d97f74fdd7763c1156f3e233cb80c63eae8501"
-  integrity sha512-ESAt3oYLIyPn2qe04vrPx/I+U8tMHnus6HnKBEkm10WDd+I4OMyb28gjNRZec4JS+ZT7tPQs7A2t7sMbLOe/cA==
+walletlink@2.4.7:
+  version "2.4.7"
+  resolved "https://registry.yarnpkg.com/walletlink/-/walletlink-2.4.7.tgz#3dd034f7cd6e9d9f4cc1d677bb951869dc743e20"
+  integrity sha512-jhLVOMly9oWiSE8mZ4/+uMyVsAKHw71kGbgC1xYp50SQpuLT2pfa6Hiw2VQ0omP/WHsDAPFuBo8hJGxggr768w==
   dependencies:
     "@metamask/safe-event-emitter" "2.0.0"
     bind-decorator "^1.0.11"

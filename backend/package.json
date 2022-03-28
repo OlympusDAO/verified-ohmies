@@ -17,8 +17,7 @@
     "ethers": "5.5.4",
     "jsonwebtoken": "^8.5.1",
     "node-fetch": "2.6.7",
-    "typechain": "^7.0.0",
-    "uuidv4": "6.2.7"
+    "typechain": "^7.0.0"
   },
   "devDependencies": {
     "@ethersproject/abi": "^5.0.0",

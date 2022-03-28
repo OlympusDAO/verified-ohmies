@@ -46,6 +46,12 @@ jobs:
       - name: Set staging flags
         id: staging
         run: |
+          echo ${{ github.base_ref }}
+          echo ${{ github.event_name }}
+          echo ${{ github.head_ref }}
+          echo ${{ github.ref }}
+          echo ${{ github.ref_name }}
+          echo ${{ github.ref_type }}
           if [[ ${{ github.ref_name }} == 'develop' ]]; then
             echo "This is a staging build"
             echo "::set-output name=staging_push::true"

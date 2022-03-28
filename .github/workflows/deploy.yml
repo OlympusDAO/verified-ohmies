@@ -33,7 +33,8 @@ jobs:
         id: production
         # github.ref_name is the branch/tag name that triggered the workflow run
         # therefore, this will only run and trigger a production build on push
-        # to the master branch, which is the desired outcome
+        # to the main branch, which is the desired outcome
+        # It WILL NOT run on a PR merge into the main branch, which is deliberate
         run: |
           if [[ ${{ github.ref_name }} == 'main' ]]; then
             echo "This is a production build"
@@ -44,14 +45,12 @@ jobs:
             echo "::set-output name=production_push::false"
           fi
       - name: Set staging flags
+        # github.ref_name is the branch/tag name that triggered the workflow run
+        # therefore, this will only run and trigger a staging build on push
+        # to the develop branch, which is the desired outcome
+        # It WILL NOT run on a PR merge into the develop branch, which is deliberate
         id: staging
         run: |
-          echo ${{ github.base_ref }}
-          echo ${{ github.event_name }}
-          echo ${{ github.head_ref }}
-          echo ${{ github.ref }}
-          echo ${{ github.ref_name }}
-          echo ${{ github.ref_type }}
           if [[ ${{ github.ref_name }} == 'develop' ]]; then
             echo "This is a staging build"
             echo "::set-output name=staging_push::true"

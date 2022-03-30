@@ -4,7 +4,6 @@ import {
   FIND_USER_BY_DISCORDID,
   INSERT_USER_ONE,
   INSERT_USER_VERIFIED_ONE,
-  SET_USER_ADDRESS,
   SET_USER_VERIFIED_TOKENS,
   SET_USER_VERIFIED_NONCE,
   SET_USER_VERIFIED_AUTHSTATUS,
@@ -13,7 +12,6 @@ import {
 import { utils } from "ethers";
 import { randomBytes } from "crypto";
 import { hasuraRequest } from "./hasura";
-import { assert } from "console";
 
 const recoverAddress = (nonce: string, signature: string) => {
   const address = utils.verifyMessage(nonce, signature);
@@ -38,48 +36,60 @@ export const getAuthenticationChallenge = async (address: string, discordUserId:
   const userVerified = (await checkUserVerified.json()) as any;
   console.log(`FIND_USER_BY_DISCORDID: ${JSON.stringify(userVerified)}`);
 
+  var addressExists, discordUserIdExists;
   // If any of these happens, something has gone terribly wrong. `discordUserId` and
   // `address` are unique fields.
-  if (user.data.user.length !== 0 && user.data.user.length !== 1) {
-    console.log(`Unexpected number of records found for this Ethereum address. (address: ${address})`);
-    throw Error("Unexpected number of records found for this Ethereum address.");
+  if (user.data.user.length === 0) {
+    addressExists = false;
+  } else if (user.data.user.length === 1) {
+    addressExists = true;
+  } else {
+    throw Error(`Unexpected number of records found for this Ethereum address. (address: ${address})`);
   }
-  if (userVerified.data.user.length !== 0 && userVerified.data.user.length !== 1) {
-    console.log(`Unexpected number of records found for this Discord User ID. (discordUserId: ${discordUserId})`);
-    throw Error("Unexpected number of records found for this Discord User ID.");
+  if (userVerified.data.user.length === 0) {
+    discordUserIdExists = false;
+  } else if (userVerified.data.user.length === 1) {
+    discordUserIdExists = true;
+  } else {
+    throw Error(`Unexpected number of records found for this Discord User ID. (discordUserId: ${discordUserId})`);
   }
 
   // If `address` doesn't exist in `user` table
-  if (user.data.user.length == 0) {
+  if (!addressExists) {
     console.log(`(address: ${address}, discordUserId: ${discordUserId}) ADDRESS EXISTS ? - [NO]`);
-    // If `discordUserId` hasn't been registered yet, create a new `user` from scratch
+    // If `discordUserId` hasn't been registered yet, we'll just create a new `user` from scratch
     // Fields `address` and `chainId` go into `user`.
     // Field `discordUserId` goes into `user_verified`;
-    if (userVerified.data.user.length == 0) {
+    if (!discordUserIdExists) {
       console.log(`(address: ${address}, discordUserId: ${discordUserId}) DISCORD ID EXISTS ? - [NO]`);
-      const insertResponse = await hasuraRequest(INSERT_USER_ONE, {
-        address,
-        chainId,
+    }
+    // If `discordUserId` has already been registered, we first delete `user_verified` for that `discordUserId`, and only then
+    // insert a new `user` from scratch.
+    // This is the case of a Discord user that had already authenticated, and is returning to authenticate with a different `address`,
+    // such that the new `address` is NOT YET registered in `user`.
+    // Example: user authenticates on Verified Ohmies with `address` X. Then, later on, he comes back and authenticates with address Y,
+    // such that address Y was still not in `user`.
+    // Result: user_verified with this user's `discordUserId` gets deleted and
+    // `user` with address Y gets inserted now to be paired with a `user_verified` with this `discordUserId`.
+    else {
+      console.log(`(address: ${address}, discordUserId: ${discordUserId}) DISCORD ID EXISTS ? - [YES]`);
+      // Delete old user verified
+      const deleteResponse = await hasuraRequest(DELETE_USER_VERIFIED_BY_DISCORDID, {
         discordUserId,
       });
-      const response = await insertResponse.json();
-      console.log(`INSERT_USER_ONE:`, JSON.stringify(response));
+      const dResponse = await deleteResponse.json();
+      console.log(`DELETE_USER_VERIFIED_BY_DISCORDID:`, JSON.stringify(dResponse));
     }
-    // If `discordUserId` had already been registered update the `address` and `chainId` fields, for this `discordUserId`
-    // (this is the case of a Discord user that had already registered, and is returning to register with a different address,
-    // such that the new address was not yet registered in `user`)
-    else if (userVerified.data.user.length == 1) {
-      console.log(`(address: ${address}, discordUserId: ${discordUserId}) DISCORD ID EXISTS ? - [YES]`);
-      const setResponse = await hasuraRequest(SET_USER_ADDRESS, {
-        discordUserId, // where
-        address, // _set
-        chainId, // _set
-      });
-      const response = await setResponse.json();
-      console.log(`SET_USER_ADDRESS:`, JSON.stringify(response));
-    }
+
+    const insertResponse = await hasuraRequest(INSERT_USER_ONE, {
+      address,
+      chainId,
+      discordUserId,
+    });
+    const response = await insertResponse.json();
+    console.log(`INSERT_USER_ONE:`, JSON.stringify(response));
     // If `address` exists in `user` table
-  } else if (user.data.user.length == 1) {
+  } else {
     console.log(`(address: ${address}, discordUserId: ${discordUserId}) ADDRESS EXISTS ? - [YES]`);
     // If this `address` is already paired to a `discordUserId`
     if (user.data.user[0].user_verified !== null) {
@@ -106,7 +116,7 @@ export const getAuthenticationChallenge = async (address: string, discordUserId:
         });
         const tResponse = await setTokensResponse.json();
         console.log(`SET_USER_VERIFIED_TOKENS:`, JSON.stringify(tResponse));
-        // If it's a different `discordUserId` from the one this user is trying to register, the address is considered locked, so we throw error
+        // If it's a different `discordUserId` from the one this user is trying to authenticate with, the address is considered locked, so we throw error
       } else {
         console.log(`(address: ${address}, discordUserId: ${discordUserId}) SAME DISCORD ID AS THIS ONE ? - [NO]`);
         throw Error("Another Discord user is already registered with this Ethereum address.");
@@ -115,23 +125,26 @@ export const getAuthenticationChallenge = async (address: string, discordUserId:
     // If this `address` is not yet paired to a `discordUserId`, it's free to take
     else {
       console.log(`(address: ${address}, discordUserId: ${discordUserId}) ADDRESS PAIRED TO DISCORD ID ? - [NO]`);
-      // If `discordUserId` already exists, we first delete the old record with this `discordUserId`
-      // (this is the case of a Discord user that had already registered, and is returning to register with a different `address`,
-      // such that the new `address` was already registered in `user` but didn't have attributed a `discordUserId`.
-      // Example: user X registers on Verified Ohmies with `address` X and also on Odyssey with `address` Y. But then user X
-      // tries to register again on Verified Ohmies, but now with `address` Y.
-      // Result: user_verified with this user's `discordUserId` gets deleted and
+      // If `discordUserId` hasn't been registered yet, we simply pair it to the `address`
+      if (!discordUserIdExists) {
+        console.log(`(address: ${address}, discordUserId: ${discordUserId}) DISCORD ID EXISTS ? - [NO]`);
+      }
+      // If `discordUserId` has already been registered, we first delete `user_verified` for that `discordUserId`, and only then
+      // pair this `discordUserId` to the `address`.
+      // This is the case of a Discord user that had already authenticated and is returning to authenticate with a different `address`,
+      // such that the new `address` IS ALREADY registered in `user` but didn't have attributed a `discordUserId`.
+      // Example: user authenticates on Verified Ohmies with `address` X and also on Odyssey with `address` Y. But then user X
+      // tries to authenticate again on Verified Ohmies, but now with `address` Y.
+      // Result: `user_verified` with this user's `discordUserId` gets deleted and
       // `user` with address Y gets updated to be paired with this `discordUserId`.
-      if (userVerified.data.user.length == 1) {
+      else {
         console.log(`(address: ${address}, discordUserId: ${discordUserId}) DISCORD ID EXISTS ? - [YES]`);
-        // Delete old user
+        // Delete old user verified
         const deleteResponse = await hasuraRequest(DELETE_USER_VERIFIED_BY_DISCORDID, {
           discordUserId,
         });
         const dResponse = await deleteResponse.json();
-        console.log(`DELETE_USER_ONE:`, JSON.stringify(dResponse));
-      } else {
-        console.log(`(address: ${address}, discordUserId: ${discordUserId}) DISCORD ID EXISTS ? - [NO]`);
+        console.log(`DELETE_USER_VERIFIED_BY_DISCORDID:`, JSON.stringify(dResponse));
       }
 
       // Set the new `chainId` for this `address` and get the `id` of the updated `user`
@@ -179,9 +192,10 @@ export const getAuthenticationChallenge = async (address: string, discordUserId:
 export const authenticate = async (discordUserId: string, signature: string) => {
   const checkUser = await hasuraRequest(FIND_USER_BY_DISCORDID, { discordUserId });
   const user = (await checkUser.json()) as any;
+  console.log(`FIND_USER_BY_DISCORDID:`, JSON.stringify(user));
 
-  if (user.data.user.length == 0) throw new Error("User not found.");
-  assert(user.data.user.length == 1);
+  if (user.data.user.length === 0) throw new Error("User not found.");
+  if (user.data.user.length !== 1) throw new Error("Unexpected number of records found for this Discord User ID.");
   const address = user.data.user[0].address;
   const chainId = user.data.user[0].chainId;
   const nonce = user.data.user[0].user_verified.nonce;
@@ -193,7 +207,7 @@ export const authenticate = async (discordUserId: string, signature: string) => 
   const recoveredAddress = recoverAddress(nonce, signature);
 
   if (recoveredAddress.toLowerCase() === address.toLowerCase()) {
-    // If the check passes, return the discord user ID to attribute the role
+    // If the check passes, return the Discord User ID to attribute the role
     return { address, chainId };
   } else {
     throw new Error("Bad signature.");

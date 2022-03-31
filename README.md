@@ -97,3 +97,11 @@ Initial setup for deployment is a little complicated, so is being documented her
      3. Select "General Information" in the sidebar
      4. Enter the domain in the "Interactions Endpoint URL" field, in the format: `https://<domain>/api/command-interactions`
      5. Click "Save Changes".
+
+Manual deployments are supported through GitHub Actions:
+
+1. Select on the deployment in the left-hand list
+2. Select the branch to deploy on
+3. Hit "Run workflow"
+
+![Run Workflow](img/run-workflow.png)

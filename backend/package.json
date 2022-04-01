@@ -14,7 +14,7 @@
     "typechain:build": "yarn run typechain --target ethers-v5 --out-dir typechain abi/*.json abi/**/*.json"
   },
   "dependencies": {
-    "ethers": "5.5.4",
+    "ethers": "5.6.0",
     "jsonwebtoken": "^8.5.1",
     "node-fetch": "2.6.7",
     "typechain": "^7.0.0"

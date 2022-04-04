@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
 const Authentication = ({
   chainIsSupported,
   chainData,
-  gOHMBalance,
+  score,
   address,
   authenticate,
   authStatus,
@@ -54,7 +54,7 @@ const Authentication = ({
             <Typography variant="h3">{chainData.name}</Typography>
           </Box>
           {/* TODO: make this box vertically narrower */}
-          <BalancesBox gOHMBalance={gOHMBalance} />
+          <BalancesBox score={score} />
           <Grid
             container
             direction="row"
@@ -75,7 +75,7 @@ const Authentication = ({
                 />
               </Box>
             )}
-            {gOHMBalance == 0 && (
+            {score == 0 && (
               <Box marginLeft={1}>
                 {/* Color setting here is hacky, but the badge colors deviate from the rest of the theme patterns for dark mode. */}
                 <SvgIcon
@@ -88,7 +88,7 @@ const Authentication = ({
             )}
           </Grid>
           {/* User doesn't own any tokens */}
-          {gOHMBalance == 0 && (
+          {score == 0 && (
             <Box className={classes.paperBox} mt={2}>
               <Paper>
                 <Typography variant="body1" align="center">
@@ -98,7 +98,7 @@ const Authentication = ({
             </Box>
           )}
           {/* User owns tokens but hasn't authenticated yet */}
-          {gOHMBalance > 0 &&
+          {score > 0 &&
             authStatus != "success" &&
             (authStatus == "waiting" ? (
               <CTAButton

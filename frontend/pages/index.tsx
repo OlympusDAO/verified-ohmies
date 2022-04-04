@@ -57,7 +57,7 @@ type StateType = {
   signer?: any;
   address?: string;
   chainId?: number;
-  gOHMBalance?: any;
+  score?: number;
   chainIsSupported?: boolean;
   chainData?: any;
   authStatus?: string;
@@ -76,7 +76,7 @@ type ActionType =
       signer: StateType["signer"];
       address: StateType["address"];
       chainId: StateType["chainId"];
-      gOHMBalance: StateType["gOHMBalance"];
+      score: StateType["score"];
       chainIsSupported: StateType["chainIsSupported"];
       chainData: StateType["chainData"];
     }
@@ -84,7 +84,7 @@ type ActionType =
       type: "SET_ADDRESS";
       address: StateType["address"];
       signer: StateType["signer"];
-      gOHMBalance: StateType["gOHMBalance"];
+      score: StateType["score"];
     }
   | {
       type: "RESET_WEB3_PROVIDER";
@@ -105,19 +105,17 @@ const initialState: StateType = {
   signer: null,
   address: undefined,
   chainId: undefined,
-  gOHMBalance: 0,
+  score: 0,
   chainIsSupported: true,
   chainData: {},
   authStatus: null,
   error: null,
 };
 
-type Token = {
-  contractAddress?: string;
-  symbol: string;
-  name: string;
-  decimals: number;
-  balance: number;
+type ScoreResponse = {
+  account: string;
+  score: string;
+  protocol: string;
 };
 
 function reducer(state: StateType, action: ActionType): StateType {
@@ -135,7 +133,7 @@ function reducer(state: StateType, action: ActionType): StateType {
         signer: action.signer,
         address: action.address,
         chainId: action.chainId,
-        gOHMBalance: action.gOHMBalance,
+        score: action.score,
         chainIsSupported: action.chainIsSupported,
         chainData: action.chainData,
       };
@@ -144,7 +142,7 @@ function reducer(state: StateType, action: ActionType): StateType {
         ...state,
         address: action.address,
         signer: action.signer,
-        gOHMBalance: action.gOHMBalance,
+        score: action.score,
       };
     case "SET_AUTH_STATUS":
       return {
@@ -163,23 +161,18 @@ function reducer(state: StateType, action: ActionType): StateType {
   }
 }
 
-const fetchBalances = ({
-  address,
-  chainId,
-}: {
-  address: string;
-  chainId: number;
-}) =>
-  fetch(
-    `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/api/balances?address=${address}&chainId=${chainId}`
+const fetchScore = ({ address }: { address: string }) => {
+  return fetch(
+    `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/api/scores?address=${address}`
   ).then(async (d) => {
     const r = await d.json();
     if (!d.ok)
       throw new Error(
-        "Something went wrong fetching your balance. Try refreshing the page."
+        "Something went wrong fetching your score. Try refreshing the page."
       );
     return r;
-  }) as Promise<Token[]>;
+  }) as Promise<ScoreResponse>;
+}
 
 const Home = ({ initialAppTheme }) => {
   setInitTheme(initialAppTheme);
@@ -191,7 +184,7 @@ const Home = ({ initialAppTheme }) => {
     signer,
     address,
     chainId,
-    gOHMBalance,
+    score,
     chainIsSupported,
     chainData,
     authStatus,
@@ -214,19 +207,13 @@ const Home = ({ initialAppTheme }) => {
 
     const chainIsSupported = !(getChainData(network.chainId) === undefined);
 
-    var gOHMBalance = 0;
+    var score = 0;
     var chainData = {};
-
     if (chainIsSupported) {
       try {
         chainData = getChainData(network.chainId);
-        var balances = await fetchBalances({
-          address,
-          chainId: network.chainId,
-        });
-        gOHMBalance = balances.filter(function (t) {
-          return t.symbol == "GOHM";
-        })[0].balance;
+        var scoreResponse = await fetchScore({ address });
+        score = parseInt(scoreResponse.score);
       } catch (e) {
         dispatch({
           type: "SET_ERROR",
@@ -242,7 +229,7 @@ const Home = ({ initialAppTheme }) => {
       web3Provider,
       address,
       chainId: network.chainId,
-      gOHMBalance,
+      score,
       chainIsSupported,
       chainData,
     });
@@ -343,20 +330,15 @@ const Home = ({ initialAppTheme }) => {
           type: "SET_ERROR",
           error: null,
         });
+
+        var score = 0;
+
         if (chainIsSupported) {
           try {
             // eslint-disable-next-line no-console
             const address = accounts && accounts[0];
-            const balances = await fetchBalances({ address, chainId });
-            const gOHMBalance = balances.filter(function (t) {
-              return t.symbol == "GOHM";
-            })[0].balance;
-            dispatch({
-              type: "SET_ADDRESS",
-              address,
-              signer,
-              gOHMBalance,
-            });
+            const scoreResponse = await fetchScore({ address });
+            score = parseInt(scoreResponse.score);
           } catch (e) {
             dispatch({
               type: "SET_ERROR",
@@ -364,6 +346,13 @@ const Home = ({ initialAppTheme }) => {
             });
           }
         }
+        
+        dispatch({
+          type: "SET_ADDRESS",
+          address,
+          signer,
+          score,
+        });
       };
 
       const handleChainChanged = (chain: string[]) => {
@@ -437,7 +426,7 @@ const Home = ({ initialAppTheme }) => {
             <Authentication
               chainIsSupported={chainIsSupported}
               chainData={chainData}
-              gOHMBalance={gOHMBalance}
+              score={score}
               address={truncateHash(address)}
               authenticate={authenticate}
               authStatus={authStatus}

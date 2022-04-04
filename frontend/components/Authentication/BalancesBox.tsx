@@ -1,12 +1,12 @@
 import { Paper, DataRow } from "@olympusdao/component-library";
 
-const BalancesBox = ({ gOHMBalance }) => {
+const BalancesBox = ({ score }) => {
 
   return (
     <Paper> {/*style={{ height: "11vh" }}>*/}
       <DataRow
-        balance={`${parseFloat(gOHMBalance).toFixed(4)} gOHM`}
-        title="Your Balance"
+        balance={`${parseInt(score)}`}
+        title="Your Score"
       />
     </Paper>
   );

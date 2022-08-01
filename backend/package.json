@@ -16,7 +16,7 @@
   "dependencies": {
     "ethers": "5.5.4",
     "jsonwebtoken": "^8.5.1",
-    "node-fetch": "2.6.7",
+    "node-fetch": "3.2.10",
     "typechain": "^7.0.0"
   },
   "devDependencies": {
